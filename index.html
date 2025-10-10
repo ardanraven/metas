@@ -3,18 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Controle de Meta Mensal de Vendas</title>
+  <title>Portal de Metas</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .progress-bar { transition: width 400ms ease; }
-    .table-wrap { max-height: 360px; overflow: auto; }
-    /* Estilos para o spinner de carregamento */
     .loader {
       border: 4px solid #f3f3f3;
-      border-top: 4px solid #3498db;
+      border-top: 4px solid #4f46e5;
       border-radius: 50%;
       width: 40px;
       height: 40px;
@@ -26,212 +24,287 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-gray-100 text-gray-800">
 
   <!-- TELA DE LOGIN -->
-  <div id="login-view" class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div id="login-view" class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
     <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-lg">
       <div>
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Acessar Painel de Metas
+          Portal de Metas
         </h2>
       </div>
       <form id="login-form" class="mt-8 space-y-6">
         <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="email" class="sr-only">Email</label>
-            <input id="login-email" name="email" type="email" autocomplete="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email">
-          </div>
-          <div>
-            <label for="password" class="sr-only">Senha</label>
-            <input id="login-password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Senha">
-          </div>
+          <input id="login-email" type="email" autocomplete="email" required class="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Seu email">
+          <input id="login-password" type="password" autocomplete="current-password" required class="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Sua senha">
         </div>
         <p id="login-error" class="text-sm text-red-600 mt-2"></p>
-        <div>
-          <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Entrar
-          </button>
-        </div>
+        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Acessar
+        </button>
       </form>
-      <div class="text-sm text-center">
-        <p>Não tem uma conta?
-          <a href="#" id="show-register" class="font-medium text-indigo-600 hover:text-indigo-500">
-            Crie uma agora
-          </a>
-        </p>
-      </div>
     </div>
   </div>
 
-  <!-- TELA DE REGISTRO -->
-  <div id="register-view" class="min-h-screen items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 hidden">
-      <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-lg">
-        <div>
-          <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Criar Nova Conta
-          </h2>
-        </div>
-        <form id="register-form" class="mt-8 space-y-6">
-           <div>
-              <label for="email-address" class="sr-only">Email</label>
-              <input id="register-email" name="email" type="email" autocomplete="email" required class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Email">
-            </div>
-            <div>
-              <label for="password" class="sr-only">Senha</label>
-              <input id="register-password" name="password" type="password" required class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Senha (mínimo 6 caracteres)">
-            </div>
-          <p id="register-error" class="text-sm text-red-600 mt-2"></p>
-          <div>
-            <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Registrar
-            </button>
-          </div>
-        </form>
-         <div class="text-sm text-center">
-            <p>Já tem uma conta?
-            <a href="#" id="show-login" class="font-medium text-indigo-600 hover:text-indigo-500">
-                Faça o login
-            </a>
-            </p>
-        </div>
-      </div>
-    </div>
-
-
   <!-- TELA PRINCIPAL DA APLICAÇÃO -->
-  <div id="app-view" class="max-w-6xl mx-auto p-6 hidden">
+  <div id="app-view" class="max-w-7xl mx-auto p-4 sm:p-6 hidden">
     <header class="mb-6 flex flex-wrap justify-between items-center">
       <div>
-        <h1 class="text-2xl md:text-3xl font-semibold tracking-tight">Controle de Meta Mensal de Vendas</h1>
-        <p id="user-email" class="text-sm text-slate-500">Carregando...</p>
+        <h1 id="header-title" class="text-2xl md:text-3xl font-semibold tracking-tight"></h1>
+        <p id="user-info" class="text-sm text-slate-500">Carregando...</p>
       </div>
       <button id="logout-btn" class="px-4 py-2 mt-2 md:mt-0 rounded-xl bg-rose-600 text-white text-sm hover:bg-rose-700">Sair</button>
     </header>
 
     <!-- SPINNER DE CARREGAMENTO -->
-    <div id="app-loader" class="flex justify-center items-center py-10">
+    <div id="app-loader" class="flex flex-col justify-center items-center py-10 bg-white rounded-2xl shadow">
       <div class="loader"></div>
+      <p id="loader-message" class="mt-4 text-slate-600">Verificando credenciais...</p>
+    </div>
+    
+    <!-- ======================================================= -->
+    <!-- PAINEL ADMINISTRATIVO -->
+    <!-- ======================================================= -->
+    <div id="admin-dashboard" class="hidden space-y-6">
+       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Coluna de Criação de Usuário -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow p-5 sticky top-6">
+                <h2 class="text-lg font-semibold">Criar Novo Usuário</h2>
+                <form id="create-user-form" class="mt-4 space-y-4">
+                    <div>
+                        <label for="admin-userName" class="block text-sm font-medium text-gray-700">Nome Completo</label>
+                        <input type="text" id="admin-userName" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="admin-userEmail" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="admin-userEmail" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="admin-userPassword" class="block text-sm font-medium text-gray-700">Senha Provisória</label>
+                        <input type="password" id="admin-userPassword" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="admin-userRole" class="block text-sm font-medium text-gray-700">Função</label>
+                        <select id="admin-userRole" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="seller">Vendedor(a)</option>
+                            <option value="supervisor">Supervisor(a)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="admin-userStore" class="block text-sm font-medium text-gray-700">Loja</label>
+                        <select id="admin-userStore" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="">Selecione a loja</option>
+                            <option value="24info">24info</option>
+                            <option value="MegaMusica">MegaMusica</option>
+                            <option value="Data">Data</option>
+                            <option value="MegaInfo">MegaInfo</option>
+                        </select>
+                    </div>
+                    <div id="admin-supervisor-selector-div" class="hidden">
+                        <label for="admin-userSupervisor" class="block text-sm font-medium text-gray-700">Supervisor Responsável</label>
+                        <select id="admin-userSupervisor" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="">Primeiro, selecione a loja</option>
+                        </select>
+                    </div>
+                    <p id="admin-form-feedback" class="text-sm"></p>
+                    <button type="submit" id="admin-create-user-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Criar Conta
+                    </button>
+                </form>
+                </div>
+            </div>
+
+            <!-- Coluna da Lista de Usuários -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow p-5">
+                    <h2 class="text-lg font-semibold">Usuários Cadastrados</h2>
+                    <div class="overflow-x-auto mt-3">
+                    <table class="min-w-full text-sm text-left">
+                        <thead class="bg-slate-100">
+                        <tr>
+                            <th class="p-3 font-medium">Nome</th>
+                            <th class="p-3 font-medium">Email</th>
+                            <th class="p-3 font-medium">Função</th>
+                            <th class="p-3 font-medium">Loja</th>
+                        </tr>
+                        </thead>
+                        <tbody id="admin-users-table">
+                        <!-- Linhas preenchidas via JS -->
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- CONTEÚDO DO PAINEL -->
-    <div id="app-content" class="hidden">
-      <!-- Configurações -->
+    <!-- ======================================================= -->
+    <!-- PAINEL DO SUPERVISOR -->
+    <!-- ======================================================= -->
+    <div id="supervisor-dashboard" class="hidden space-y-6">
+        <!-- Definição de Meta da Loja -->
+        <section class="bg-white rounded-2xl shadow p-5 grid md:grid-cols-2 gap-6">
+            <div>
+                <h2 class="text-lg font-semibold">Gerenciar Meta da Loja</h2>
+                <div class="mt-3 flex items-center gap-4 flex-wrap">
+                    <div class="flex-grow">
+                        <label for="sup-meta-loja-input" class="block text-sm font-medium text-gray-700">Meta do Mês (R$)</label>
+                        <input id="sup-meta-loja-input" type="number" placeholder="Ex: 500000" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <button id="sup-save-meta-loja" class="px-5 py-2 mt-6 rounded-xl bg-emerald-600 text-white text-sm hover:bg-emerald-700 self-end">Salvar Meta</button>
+                </div>
+                <p id="sup-meta-feedback" class="text-sm mt-2"></p>
+            </div>
+             <div>
+                <h2 class="text-lg font-semibold">Ações do Mês</h2>
+                <p class="text-xs text-slate-500 mt-1">Esta ação arquivará os resultados atuais e irá zerar as vendas de todos os vendedores para iniciar um novo mês.</p>
+                <button id="sup-close-month-btn" class="w-full mt-4 px-5 py-2 rounded-xl bg-red-600 text-white text-sm hover:bg-red-700">Fechar e Arquivar Mês Atual</button>
+             </div>
+        </section>
+
+        <!-- KPIs da Loja/Equipe -->
+        <section class="grid md:grid-cols-4 gap-6">
+            <div class="bg-white rounded-2xl shadow p-5">
+                <p class="text-sm text-slate-500">Meta da Loja</p>
+                <p id="sup-kpi-meta-loja" class="text-2xl font-semibold">R$ 0,00</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow p-5">
+                <p class="text-sm text-slate-500">Meta Total da Equipe</p>
+                <p id="sup-kpi-meta-equipe" class="text-2xl font-semibold">R$ 0,00</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow p-5">
+                <p class="text-sm text-slate-500">Vendido Total (mês)</p>
+                <p id="sup-kpi-vendido-total" class="text-2xl font-semibold text-green-600">R$ 0,00</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow p-5">
+                <p class="text-sm text-slate-500">Progresso Geral</p>
+                <p id="sup-kpi-progresso-total" class="text-2xl font-semibold">0%</p>
+            </div>
+        </section>
+
+        <!-- Gráfico da Loja -->
+        <section class="bg-white rounded-2xl shadow p-5">
+            <h2 class="text-lg font-semibold">Desempenho de Vendas da Equipe (Mês Atual)</h2>
+            <div class="h-96 mt-4"><canvas id="storeChart"></canvas></div>
+        </section>
+
+        <!-- Desempenho dos Vendedores -->
+        <section class="bg-white rounded-2xl shadow p-5">
+            <h2 class="text-lg font-semibold">Desempenho por Vendedor (Mês Atual)</h2>
+            <p class="text-xs text-slate-500">Clique em um vendedor para ver seu gráfico individual.</p>
+            <div class="overflow-x-auto mt-3">
+            <table class="min-w-full text-sm text-left">
+                <thead class="bg-slate-100">
+                <tr>
+                    <th class="p-3 font-medium">Vendedor(a)</th>
+                    <th class="p-3 font-medium text-right">Meta (R$)</th>
+                    <th class="p-3 font-medium text-right">Vendido (R$)</th>
+                    <th class="p-3 font-medium">Progresso</th>
+                </tr>
+                </thead>
+                <tbody id="sellers-table-body"></tbody>
+            </table>
+            </div>
+        </section>
+
+        <!-- Histórico de Meses -->
+        <section class="bg-white rounded-2xl shadow p-5">
+            <h2 class="text-lg font-semibold">Histórico de Meses Fechados</h2>
+            <div id="history-table-container" class="overflow-x-auto mt-3">
+                <!-- Tabela de histórico será inserida aqui -->
+            </div>
+        </section>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- PAINEL DO VENDEDOR -->
+    <!-- ======================================================= -->
+    <div id="seller-dashboard" class="hidden space-y-6">
+      <!-- Meta da Loja (Somente Visualização) -->
+      <section class="bg-blue-800 text-white rounded-2xl shadow p-5 text-center">
+        <p class="text-sm opacity-80">Meta da Loja</p>
+        <p id="seller-kpi-meta-loja" class="text-3xl font-bold tracking-tight">R$ 0,00</p>
+      </section>
+      
+      <!-- Configurações do Vendedor -->
       <section class="bg-white rounded-2xl shadow p-5 grid md:grid-cols-3 gap-4">
-        <div class="md:col-span-1">
-          <label class="block text-sm font-medium">Meta do mês (R$)</label>
-          <input id="metaMes" type="number" inputmode="decimal" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="75000" />
-          <input id="metaMesSlider" type="range" min="10000" max="100000" step="1000" class="w-full mt-2 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-          <p class="text-xs text-slate-500 mt-1">Use o slider para metas de vendedor ou digite qualquer valor.</p>
+        <div>
+          <label class="block text-sm font-medium">Sua meta do mês (R$)</label>
+          <input id="seller-meta-mes" type="number" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block text-sm font-medium">Dias no mês</label>
-          <input id="diasMes" type="number" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="30" />
+          <input id="seller-dias-mes" type="number" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block text-sm font-medium">Dia atual do mês</label>
-          <input id="diaAtual" type="number" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <input id="seller-dia-atual" type="number" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
-        <div class="md:col-span-3 flex flex-wrap gap-2 pt-1">
-          <button id="saveCfg" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm hover:bg-emerald-700">Salvar configurações</button>
-          <button id="resetAll" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-800 text-sm hover:bg-slate-300">Limpar vendas</button>
-        </div>
-      </section>
-
-      <!-- KPIs -->
-      <section class="grid md:grid-cols-4 gap-4 mt-6">
-        <div class="bg-white rounded-2xl shadow p-5">
-          <p class="text-xs text-slate-500">Meta diária</p>
-          <p id="kpiMetaDiaria" class="text-xl font-semibold">R$ 0,00</p>
-        </div>
-        <div class="bg-white rounded-2xl shadow p-5">
-          <p class="text-xs text-slate-500">Vendido até agora</p>
-          <p id="kpiVendido" class="text-xl font-semibold">R$ 0,00</p>
-        </div>
-        <div class="bg-white rounded-2xl shadow p-5">
-          <p class="text-xs text-slate-500">Necessário por dia</p>
-          <p id="kpiNecessarioDia" class="text-xl font-semibold">R$ 0,00</p>
-        </div>
-        <div class="bg-white rounded-2xl shadow p-5">
-          <p class="text-xs text-slate-500">Ritmo × Ideal</p>
-          <p id="kpiRitmo" class="text-xl font-semibold">R$ 0,00</p>
+        <div class="md:col-span-3">
+          <button id="seller-save-cfg" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm hover:bg-emerald-700">Salvar minhas configurações</button>
         </div>
       </section>
 
-      <!-- Progresso -->
-      <section class="bg-white rounded-2xl shadow p-5 mt-6">
-        <div class="flex items-center justify-between">
-          <p class="text-sm font-medium">Progresso da meta</p>
-          <p id="kpiProgresso" class="text-sm font-semibold">0%</p>
-        </div>
-        <div class="w-full h-3 bg-slate-200 rounded-full mt-2">
-          <div id="progressFill" class="h-3 bg-indigo-600 rounded-full progress-bar" style="width:0%"></div>
-        </div>
-        <p id="alerta" class="mt-3 text-sm"></p>
+      <!-- KPIs do Vendedor -->
+      <section class="grid md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl shadow p-5"><p class="text-xs text-slate-500">Sua meta diária</p><p id="seller-kpi-meta-diaria" class="text-xl font-semibold">R$ 0,00</p></div>
+        <div class="bg-white rounded-2xl shadow p-5"><p class="text-xs text-slate-500">Vendido até agora</p><p id="seller-kpi-vendido" class="text-xl font-semibold">R$ 0,00</p></div>
+        <div class="bg-white rounded-2xl shadow p-5"><p class="text-xs text-slate-500">Necessário por dia</p><p id="seller-kpi-necessario" class="text-xl font-semibold">R$ 0,00</p></div>
+        <div class="bg-white rounded-2xl shadow p-5"><p class="text-xs text-slate-500">Seu Ritmo × Ideal</p><p id="seller-kpi-ritmo" class="text-xl font-semibold">R$ 0,00</p></div>
       </section>
 
-      <!-- Registro de vendas -->
-      <section class="bg-white rounded-2xl shadow p-5 mt-6 grid md:grid-cols-3 gap-4">
+      <!-- Progresso do Vendedor -->
+      <section class="bg-white rounded-2xl shadow p-5">
+        <div class="flex items-center justify-between"><p class="text-sm font-medium">Progresso da sua meta</p><p id="seller-kpi-progresso" class="text-sm font-semibold">0%</p></div>
+        <div class="w-full h-3 bg-slate-200 rounded-full mt-2"><div id="seller-progress-fill" class="h-3 bg-indigo-600 rounded-full progress-bar" style="width:0%"></div></div>
+      </section>
+
+       <!-- Registro de vendas -->
+      <section class="bg-white rounded-2xl shadow p-5 grid md:grid-cols-3 gap-6">
         <div class="md:col-span-1">
           <h2 class="text-lg font-semibold">Registrar venda</h2>
           <div class="mt-3 space-y-3">
-            <div>
-              <label class="block text-sm font-medium">Data</label>
-              <input id="saleDate" type="date" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium">Valor (R$)</label>
-              <input id="saleAmount" type="text" inputmode="decimal" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ex.: 20000 ou 20.000,00" />
-            </div>
-            <div class="flex items-center gap-2">
-              <button id="addSale" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700">Adicionar</button>
-              <button id="removeLast" class="px-4 py-2 rounded-xl bg-rose-600 text-white text-sm hover:bg-rose-700">Desfazer última</button>
-            </div>
-            <p class="text-xs text-slate-500">Você pode lançar várias vendas no mesmo dia; somamos automaticamente.</p>
+            <input id="seller-sale-date" type="date" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <input id="seller-sale-amount" type="number" placeholder="Valor (R$)" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <button id="seller-add-sale" class="w-full px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700">Adicionar Venda</button>
           </div>
         </div>
-        <div class="md:col-span-2">
+        <div class="md-col-span-2">
           <h2 class="text-lg font-semibold">Vendas lançadas</h2>
-          <div class="table-wrap mt-3">
-            <table class="min-w-full text-sm">
-              <thead class="sticky top-0 bg-slate-100">
-                <tr>
-                  <th class="text-left p-2 font-medium">Data</th>
-                  <th class="text-right p-2 font-medium">Valor (R$)</th>
-                  <th class="text-right p-2 font-medium">Acumulado</th>
-                  <th class="p-2"></th>
-                </tr>
-              </thead>
-              <tbody id="salesTable"></tbody>
-            </table>
+          <div class="max-h-60 overflow-y-auto mt-3">
+            <table class="min-w-full text-sm"><thead class="sticky top-0 bg-slate-100"><tr><th class="text-left p-2 font-medium">Data</th><th class="text-right p-2 font-medium">Valor (R$)</th><th class="p-2"></th></tr></thead><tbody id="seller-sales-table"></tbody></table>
           </div>
         </div>
       </section>
-
-      <!-- Gráfico -->
-      <section class="bg-white rounded-2xl shadow p-5 mt-6">
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-semibold">Vendas por dia — comparativo com ideal</h2>
-          <div class="flex gap-2">
-            <button id="downloadCSV" class="px-3 py-2 rounded-xl bg-slate-200 text-slate-800 text-xs hover:bg-slate-300">Baixar CSV</button>
-            <button id="printView" class="px-3 py-2 rounded-xl bg-slate-200 text-slate-800 text-xs hover:bg-slate-300">Imprimir/Salvar PDF</button>
-          </div>
-        </div>
-        <canvas id="salesChart" class="mt-4"></canvas>
+      
+      <!-- Gráfico do Vendedor -->
+      <section class="bg-white rounded-2xl shadow p-5">
+        <h2 class="text-lg font-semibold">Seu Desempenho de Vendas (Acumulado)</h2>
+        <div class="h-96 mt-4"><canvas id="sellerChart"></canvas></div>
       </section>
-
-      <footer class="text-xs text-slate-400 mt-8 text-center">Dados salvos na nuvem com Firebase.</footer>
     </div>
   </div>
 
+  <!-- Modal para Gráfico -->
+  <div id="chart-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+      <div class="bg-white rounded-2xl shadow-xl p-5 w-full max-w-4xl relative">
+          <button id="modal-close-btn" class="absolute top-3 right-4 text-3xl font-light text-gray-500 hover:text-gray-800">&times;</button>
+          <h2 id="modal-chart-title" class="text-xl font-semibold mb-4">Desempenho</h2>
+          <div class="h-96">
+              <canvas id="modalChartCanvas"></canvas>
+          </div>
+      </div>
+  </div>
+
+
   <!-- Scripts do Firebase -->
   <script type="module">
-    // Importações do Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, onSnapshot, updateDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-    // Configuração do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAVEpjwrF4t_Z1MPt5hR1YYuEv2-x7rQqk",
       authDomain: "painel-metas-6cb79.firebaseapp.com",
@@ -241,396 +314,536 @@
       appId: "1:980825522055:web:d1f1f5609ed0e1c9079d22"
     };
 
-    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     
-    let currentUser = null;
-    let unsubscribeFromData = null; // Função para parar de ouvir as atualizações do Firestore
-
-    // ===== Lógica de Autenticação e UI =====
+    // --- LÓGICA GERAL E AUTENTICAÇÃO ---
     const loginView = document.getElementById('login-view');
-    const registerView = document.getElementById('register-view');
     const appView = document.getElementById('app-view');
     const appLoader = document.getElementById('app-loader');
-    const appContent = document.getElementById('app-content');
-    
-    const showRegisterLink = document.getElementById('show-register');
-    const showLoginLink = document.getElementById('show-login');
+    const adminDashboard = document.getElementById('admin-dashboard');
+    const supervisorDashboard = document.getElementById('supervisor-dashboard');
+    const sellerDashboard = document.getElementById('seller-dashboard');
 
-    showRegisterLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        loginView.classList.add('hidden');
-        registerView.classList.remove('hidden');
-        registerView.classList.add('flex');
-    });
+    const fmtBRL = (v) => (v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    let unsubscribeSalesListener = null;
+    let unsubscribeStoreListener = null;
+    let unsubscribeHistoryListener = null;
+    let unsubscribeAdminUsersListener = null;
 
-    showLoginLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        registerView.classList.add('hidden');
-        registerView.classList.remove('flex');
-        loginView.classList.remove('hidden');
-    });
-
-    // Formulário de Login
-    const loginForm = document.getElementById('login-form');
-    loginForm.addEventListener('submit', (e) => {
+    document.getElementById('login-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
-      const errorEl = document.getElementById('login-error');
-      errorEl.textContent = '';
-
+      document.getElementById('login-error').textContent = '';
       signInWithEmailAndPassword(auth, email, password)
-        .catch(error => {
-          console.error("Erro de login:", error.code, error.message);
-          errorEl.textContent = 'Email ou senha inválidos.';
-        });
-    });
-    
-    // Formulário de Registro
-    const registerForm = document.getElementById('register-form');
-    registerForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('register-email').value;
-      const password = document.getElementById('register-password').value;
-      const errorEl = document.getElementById('register-error');
-      errorEl.textContent = '';
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .catch(error => {
-          console.error("Erro de registro:", error.code, error.message);
-          if (error.code === 'auth/weak-password') {
-            errorEl.textContent = 'A senha precisa ter no mínimo 6 caracteres.';
-          } else if (error.code === 'auth/email-already-in-use') {
-            errorEl.textContent = 'Este email já está em uso.';
-          } else {
-            errorEl.textContent = 'Ocorreu um erro ao criar a conta.';
-          }
-        });
+        .catch(error => { document.getElementById('login-error').textContent = 'Email, senha ou permissão inválidos.'; });
     });
 
-    // Botão de Logout
-    const logoutBtn = document.getElementById('logout-btn');
-    logoutBtn.addEventListener('click', () => {
-        signOut(auth);
-    });
+    document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
 
-    // Monitoramento do estado de autenticação
     onAuthStateChanged(auth, user => {
       if (user) {
-        // Usuário está logado
-        currentUser = user;
         loginView.classList.add('hidden');
-        registerView.classList.add('hidden');
         appView.classList.remove('hidden');
-        document.getElementById('user-email').textContent = `Usuário: ${user.email}`;
-        
-        // Se já houver uma escuta ativa, cancele-a antes de iniciar uma nova
-        if (unsubscribeFromData) {
-            unsubscribeFromData();
-        }
-        loadData();
-
+        loadUserData(user);
       } else {
-        // Usuário está deslogado
-        currentUser = null;
         loginView.classList.remove('hidden');
-        registerView.classList.add('hidden');
         appView.classList.add('hidden');
-        appContent.classList.add('hidden');
-        appLoader.classList.remove('hidden');
-
-        // Cancela a escuta dos dados quando o usuário desloga
-        if (unsubscribeFromData) {
-            unsubscribeFromData();
-            unsubscribeFromData = null;
-        }
+        if(unsubscribeSalesListener) unsubscribeSalesListener();
+        if(unsubscribeStoreListener) unsubscribeStoreListener();
+        if(unsubscribeHistoryListener) unsubscribeHistoryListener();
+        if(unsubscribeAdminUsersListener) unsubscribeAdminUsersListener();
       }
     });
 
-    // ===== Util =====
-    const fmtBRL = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    const pct = (v) => (v * 100).toFixed(2).replace('.', ',') + '%';
-    const pad = (n) => String(n).padStart(2, '0');
-    const today = new Date();
-    const isoDate = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    const toBR = (iso) => { const [y, m, d] = iso.split('-'); return `${d}/${m}/${y}`; }
-    function parseBRNumber(txt) {
-      if (typeof txt !== 'string') txt = String(txt ?? '');
-      txt = txt.trim().replace(/\./g, '').replace(/,/g, '.');
-      const n = Number(txt);
-      return isNaN(n) ? 0 : n;
-    }
+    async function loadUserData(user) {
+        try {
+            appLoader.classList.remove('hidden');
+            [adminDashboard, supervisorDashboard, sellerDashboard].forEach(d => d.classList.add('hidden'));
 
-    // ===== Estado =====
-    let state;
-    const defaultState = {
-      config: { metaMes: 75000, diasMes: new Date(today.getFullYear(), today.getMonth()+1, 0).getDate(), diaAtual: today.getDate() },
-      sales: [] // {date:'YYYY-MM-DD', amount:Number}
-    };
-    
-    // Função para salvar os dados no Firestore
-    async function save() {
-      if (!currentUser) return;
-      try {
-        const userDocRef = doc(db, 'userData', currentUser.uid);
-        await setDoc(userDocRef, state);
-      } catch (error) {
-        console.error("Erro ao salvar dados: ", error);
-        alert("Não foi possível salvar os dados. Verifique sua conexão.");
-      }
-    }
-
-    // Função para carregar os dados do Firestore em tempo real
-    function loadData() {
-        if (!currentUser) return;
-        appLoader.classList.remove('hidden');
-        appContent.classList.add('hidden');
-
-        const userDocRef = doc(db, 'userData', currentUser.uid);
-        
-        unsubscribeFromData = onSnapshot(userDocRef, (docSnap) => {
-            if (docSnap.exists()) {
-                state = docSnap.data();
-            } else {
-                // Se não existem dados para o usuário, cria com o padrão
-                console.log("Nenhum dado encontrado, criando documento padrão.");
-                state = JSON.parse(JSON.stringify(defaultState)); // Deep copy
-                save(); // Salva o estado inicial
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (!userDoc.exists()) {
+                document.getElementById('loader-message').textContent = "Dados de usuário não encontrados. Contate o admin.";
+                signOut(auth);
+                return;
             }
-            hydrateUI();
-            appLoader.classList.add('hidden');
-            appContent.classList.remove('hidden');
-        }, (error) => {
-            console.error("Erro ao carregar dados em tempo real:", error);
-            alert("Erro ao carregar os dados. Tente recarregar a página.");
+
+            const userData = userDoc.data();
+            
+            if (userData.role === 'admin') {
+                document.getElementById('header-title').textContent = 'Painel Administrativo';
+                document.getElementById('user-info').textContent = `Admin: ${userData.name}`;
+                loadAdminDashboard();
+            } else {
+                if (!userData.storeId) {
+                    document.getElementById('loader-message').textContent = "Usuário sem loja associada. Contate o admin.";
+                    signOut(auth);
+                    return;
+                }
+                document.getElementById('user-info').textContent = `${userData.name} (${userData.storeId})`;
+                if(unsubscribeStoreListener) unsubscribeStoreListener();
+                unsubscribeStoreListener = onSnapshot(doc(db, 'stores', userData.storeId), (storeDoc) => {
+                    const storeData = storeDoc.exists() ? storeDoc.data() : { storeGoal: 0 };
+                    if (userData.role === 'supervisor') {
+                        document.getElementById('header-title').textContent = 'Painel do Supervisor';
+                        loadSupervisorDashboard(user.uid, userData.storeId, storeData);
+                    } else if (userData.role === 'seller') {
+                        document.getElementById('header-title').textContent = 'Painel do Vendedor';
+                        loadSellerDashboard(user.uid, storeData);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Erro ao carregar dados do usuário:", error);
+            document.getElementById('loader-message').textContent = "Ocorreu um erro ao carregar seus dados.";
+            signOut(auth);
+        }
+    }
+    
+    // --- LÓGICA DO PAINEL ADMINISTRATIVO ---
+    let allSupervisors = [];
+    function loadAdminDashboard() {
+        adminDashboard.classList.remove('hidden');
+        appLoader.classList.add('hidden');
+        
+        const usersRef = collection(db, "users");
+        unsubscribeAdminUsersListener = onSnapshot(usersRef, (snapshot) => {
+            const users = [];
+            allSupervisors = [];
+            snapshot.forEach(doc => {
+            const userData = { id: doc.id, ...doc.data() };
+            users.push(userData);
+            if (userData.role === 'supervisor') {
+                allSupervisors.push(userData);
+            }
+            });
+            renderAdminUsersTable(users);
+            updateAdminSupervisorDropdown(); 
+        });
+
+        setupAdminFormListeners();
+    }
+
+    function renderAdminUsersTable(users) {
+        const tableBody = document.getElementById('admin-users-table');
+        tableBody.innerHTML = '';
+        users.forEach(user => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-slate-200';
+            tr.innerHTML = `
+                <td class="p-3">${user.name || 'N/A'}</td>
+                <td class="p-3">${user.email}</td>
+                <td class="p-3 capitalize">${user.role === 'seller' ? 'Vendedor(a)' : user.role}</td>
+                <td class="p-3">${user.storeId || 'N/A'}</td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+    
+    function setupAdminFormListeners() {
+      const roleSelect = document.getElementById('admin-userRole');
+      const storeSelect = document.getElementById('admin-userStore');
+      const supervisorDiv = document.getElementById('admin-supervisor-selector-div');
+
+      function handleRoleOrStoreChange() {
+        const isSeller = roleSelect.value === 'seller';
+        supervisorDiv.classList.toggle('hidden', !isSeller);
+        if (isSeller) {
+          updateAdminSupervisorDropdown();
+        }
+      }
+
+      roleSelect.addEventListener('change', handleRoleOrStoreChange);
+      storeSelect.addEventListener('change', handleRoleOrStoreChange);
+      
+      document.getElementById('create-user-form').addEventListener('submit', handleCreateUser);
+      handleRoleOrStoreChange();
+    }
+    
+    function updateAdminSupervisorDropdown() {
+        const storeSelect = document.getElementById('admin-userStore');
+        const supervisorSelect = document.getElementById('admin-userSupervisor');
+        const selectedStore = storeSelect.value;
+        
+        supervisorSelect.innerHTML = '';
+        
+        if (!selectedStore) {
+            supervisorSelect.innerHTML = '<option value="">Primeiro, selecione a loja</option>';
+            return;
+        }
+
+        const filteredSupervisors = allSupervisors.filter(s => s.storeId === selectedStore);
+
+        if (filteredSupervisors.length === 0) {
+            supervisorSelect.innerHTML = '<option value="">Nenhum supervisor nesta loja</option>';
+            return;
+        }
+
+        supervisorSelect.innerHTML = '<option value="">Selecione um supervisor</option>';
+        filteredSupervisors.forEach(sup => {
+            const option = document.createElement('option');
+            option.value = sup.id;
+            option.textContent = sup.name;
+            supervisorSelect.appendChild(option);
         });
     }
 
-    // ===== UI refs =====
-    const metaMes = document.getElementById('metaMes');
-    const metaMesSlider = document.getElementById('metaMesSlider');
-    const diasMes = document.getElementById('diasMes');
-    const diaAtual = document.getElementById('diaAtual');
-    const saveCfg = document.getElementById('saveCfg');
-    const resetAll = document.getElementById('resetAll');
-    
-    const kpiMetaDiaria = document.getElementById('kpiMetaDiaria');
-    const kpiVendido = document.getElementById('kpiVendido');
-    const kpiNecessarioDia = document.getElementById('kpiNecessarioDia');
-    const kpiRitmo = document.getElementById('kpiRitmo');
-    const kpiProgresso = document.getElementById('kpiProgresso');
-    const progressFill = document.getElementById('progressFill');
-    const alerta = document.getElementById('alerta');
-
-    const saleDate = document.getElementById('saleDate');
-    const saleAmount = document.getElementById('saleAmount');
-    const addSale = document.getElementById('addSale');
-    const removeLast = document.getElementById('removeLast');
-    const salesTable = document.getElementById('salesTable');
-
-    const downloadCSV = document.getElementById('downloadCSV');
-    const printView = document.getElementById('printView');
-    
-    // ===== Chart =====
-    let chart;
-    function buildChart(labels, daily, idealAccum, realAccum) {
-      const ctx = document.getElementById('salesChart');
-      if (chart) chart.destroy();
-      chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [
-            { label: 'Vendas do dia', data: daily, backgroundColor: 'rgba(79, 70, 229, 0.8)' },
-            { type: 'line', label: 'Acumulado real', data: realAccum, tension: 0.25, borderColor: 'rgba(5, 150, 105, 1)', backgroundColor: 'rgba(5, 150, 105, 0.2)' },
-            { type: 'line', label: 'Acumulado ideal', data: idealAccum, borderDash: [6, 6], tension: 0.25, borderColor: 'rgba(225, 29, 72, 1)', backgroundColor: 'rgba(225, 29, 72, 0.2)' }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: { y: { beginAtZero: true } },
-          plugins: { legend: { position: 'bottom' } }
-        }
-      });
-      if(ctx.parentElement) {
-        ctx.parentElement.style.height = '360px';
-      }
-    }
-
-    // ===== Lógica Principal =====
-    function hydrateUI() {
-      if (!state) return;
-      metaMes.value = state.config.metaMes;
-      metaMesSlider.value = state.config.metaMes;
-      diasMes.value = state.config.diasMes;
-      diaAtual.value = state.config.diaAtual;
-      saleDate.value = isoDate(new Date());
-      saleAmount.value = '';
-      render();
-    }
-
-    function totalsByDay() {
-      const map = {};
-      if (!state || !state.sales) return [];
-      for (const s of state.sales) {
-        map[s.date] = (map[s.date] || 0) + Number(s.amount || 0);
-      }
-      return Object.entries(map).sort((a, b) => a[0].localeCompare(b[0]));
-    }
-
-    function render() {
-      if (!state) return;
-      const { metaMes: meta, diasMes: dias, diaAtual: dia } = state.config;
-      const rows = totalsByDay();
+    async function handleCreateUser(e) {
+      e.preventDefault();
+      const form = e.target;
+      const feedbackEl = document.getElementById('admin-form-feedback');
+      const submitBtn = document.getElementById('admin-create-user-btn');
       
-      const now = new Date();
-      const monthNow = now.getMonth() + 1;
-      const yearNow = now.getFullYear();
+      const name = form['admin-userName'].value;
+      const email = form['admin-userEmail'].value;
+      const password = form['admin-userPassword'].value;
+      const role = form['admin-userRole'].value;
+      const storeId = form['admin-userStore'].value;
+      const supervisorUid = form['admin-userSupervisor'].value;
 
-      const labels = Array.from({ length: dias }, (_, i) => (i + 1).toString());
-      const perDay = new Array(dias).fill(0);
-      
-      // Filtra vendas para o mês e ano corrente
-      for (const [dateISO, amount] of rows) {
-        const [y, m, d] = dateISO.split('-').map(Number);
-        if (y === yearNow && m === monthNow) {
-          const idx = d - 1;
-          if (idx >= 0 && idx < perDay.length) perDay[idx] += amount;
-        }
-      }
-      
-      const realAccum = [];
-      const idealAccum = [];
-      let running = 0;
-      const metaDiaria = meta / (dias || 1);
-      for (let i = 0; i < dias; i++) {
-        running += perDay[i];
-        realAccum.push(running);
-        idealAccum.push(metaDiaria * (i + 1));
-      }
-
-      const vendidoAteAgora = realAccum[Math.max(0, Math.min(dia - 1, realAccum.length - 1))] || 0;
-      const faltaMeta = Math.max(meta - vendidoAteAgora, 0);
-      const diasRestantes = Math.max(dias - dia, 0);
-      const necessarioDia = diasRestantes > 0 ? faltaMeta / diasRestantes : 0;
-      const ritmoXIdeal = vendidoAteAgora - (metaDiaria * dia);
-      const progresso = meta > 0 ? (vendidoAteAgora / meta) : 0;
-      
-      kpiMetaDiaria.textContent = fmtBRL(metaDiaria || 0);
-      kpiVendido.textContent = fmtBRL(vendidoAteAgora);
-      kpiNecessarioDia.textContent = fmtBRL(necessarioDia);
-      kpiRitmo.textContent = (ritmoXIdeal >= 0 ? '+' : '') + fmtBRL(ritmoXIdeal);
-      kpiRitmo.className = 'text-xl font-semibold ' + (ritmoXIdeal >= 0 ? 'text-emerald-600' : 'text-rose-600');
-      
-      kpiProgresso.textContent = pct(progresso);
-      progressFill.style.width = Math.min(100, progresso * 100) + '%';
-      
-      alerta.textContent = '';
-      alerta.className = 'mt-3 text-sm';
-      if (necessarioDia > metaDiaria * 1.3 && diasRestantes > 0) {
-        alerta.textContent = 'Atenção: é preciso acelerar as vendas para alcançar a meta.';
-        alerta.classList.add('text-rose-600');
-      } else if (ritmoXIdeal > 0) {
-        alerta.textContent = 'Parabéns! Você está acima do ritmo ideal.';
-        alerta.classList.add('text-emerald-700');
-      }
-
-      salesTable.innerHTML = '';
-      let acumulado = 0;
-      for (const [dateISO, val] of rows) {
-        acumulado += val;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="p-2">${toBR(dateISO)}</td>
-          <td class="p-2 text-right">${fmtBRL(val)}</td>
-          <td class="p-2 text-right">${fmtBRL(acumulado)}</td>
-          <td class="p-2 text-right"><button data-date="${dateISO}" class="text-rose-600 text-xs hover:underline">remover dia</button></td>
-        `;
-        salesTable.appendChild(tr);
-      }
-      
-      buildChart(labels, perDay, idealAccum, realAccum);
-    }
-
-    // ===== Eventos =====
-    metaMesSlider.addEventListener('input', (e) => {
-        metaMes.value = e.target.value;
-    });
-    metaMes.addEventListener('input', (e) => {
-        metaMesSlider.value = e.target.value;
-    });
-
-    saveCfg.addEventListener('click', () => {
-      state.config.metaMes = Number(metaMes.value || 0);
-      state.config.diasMes = Math.max(1, Number(diasMes.value || 30));
-      state.config.diaAtual = Math.min(state.config.diasMes, Math.max(1, Number(diaAtual.value || new Date().getDate())));
-      save(); // A renderização ocorrerá automaticamente pelo onSnapshot
-    });
-
-    resetAll.addEventListener('click', () => {
-      // Usando um modal customizado simples em vez de confirm()
-      if (window.confirm('Deseja apagar TODAS as vendas deste mês? As configurações serão mantidas.')) {
-        state.sales = [];
-        save();
-      }
-    });
-
-    addSale.addEventListener('click', () => {
-      const date = saleDate.value || isoDate(new Date());
-      const amount = parseBRNumber(saleAmount.value);
-      if (!amount || amount <= 0) {
-          alert('Informe um valor de venda válido (ex.: 20000 ou 20.000,00).');
-          return;
-      }
-      if(!state.sales) state.sales = [];
-      state.sales.push({ date, amount });
-      save();
-      saleAmount.value = '';
-      saleAmount.focus();
-    });
-    saleAmount.addEventListener('keyup', (e) => { if(e.key==='Enter') addSale.click() });
-
-    removeLast.addEventListener('click', () => {
-      if (!state.sales || state.sales.length === 0) return;
-      state.sales.pop();
-      save();
-    });
-
-    salesTable.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-date]');
-      if (!btn) return;
-      const dateISO = btn.getAttribute('data-date');
-      state.sales = state.sales.filter(s => s.date !== dateISO);
-      save();
-    });
-
-    downloadCSV.addEventListener('click', () => {
-      if (!state || !state.sales || state.sales.length === 0) {
-        alert("Não há vendas para exportar.");
+      if (role === 'seller' && !supervisorUid) {
+        feedbackEl.textContent = 'Por favor, selecione um supervisor para o vendedor.';
+        feedbackEl.className = 'text-sm text-red-600';
         return;
       }
-      const rows = [['Data', 'Valor']];
-      for (const s of state.sales) rows.push([s.date, s.amount]);
-      const csv = rows.map(r => r.join(';')).join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `vendas_${currentUser.email}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    });
+      
+      feedbackEl.textContent = 'Criando usuário...';
+      submitBtn.disabled = true;
 
-    printView.addEventListener('click', () => window.print());
+      try {
+        const tempApp = initializeApp(firebaseConfig, "secondary" + new Date().getTime());
+        const tempAuth = getAuth(tempApp);
+        const userCredential = await createUserWithEmailAndPassword(tempAuth, email, password);
+        const newUser = userCredential.user;
 
-    // Inicialização dos campos de data
-    diaAtual.value = today.getDate();
-    diasMes.value = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    saleDate.value = isoDate(today);
+        const userData = { name, email, role, storeId };
+        if (role === 'seller') {
+            userData.supervisorUid = supervisorUid;
+        }
 
+        await setDoc(doc(db, "users", newUser.uid), userData);
+        form.reset();
+        document.getElementById('admin-supervisor-selector-div').classList.add('hidden');
+        feedbackEl.textContent = 'Usuário criado com sucesso!';
+        feedbackEl.className = 'text-sm text-green-600';
+      } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+            feedbackEl.textContent = 'Erro: Este email já está cadastrado.';
+        } else if (error.code === 'auth/weak-password') {
+            feedbackEl.textContent = 'Erro: A senha precisa ter no mínimo 6 caracteres.';
+        } else {
+            feedbackEl.textContent = 'Ocorreu um erro ao criar o usuário.';
+        }
+        feedbackEl.className = 'text-sm text-red-600';
+      } finally {
+        submitBtn.disabled = false;
+        setTimeout(() => feedbackEl.textContent = '', 4000);
+      }
+    }
+
+    // --- LÓGICA DO PAINEL DO SUPERVISOR ---
+    let currentTeamData = [];
+    async function loadSupervisorDashboard(uid, storeId, storeData) {
+        document.getElementById('sup-kpi-meta-loja').textContent = fmtBRL(storeData.storeGoal);
+        document.getElementById('sup-meta-loja-input').value = storeData.storeGoal || 0;
+        setupSupervisorEventListeners(uid, storeId, storeData);
+
+        const sellersQuery = query(collection(db, 'users'), where("supervisorUid", "==", uid));
+        const querySnapshot = await getDocs(sellersQuery);
+        const sellers = querySnapshot.docs.map(d => ({ uid: d.id, ...d.data() }));
+
+        const salesPromises = sellers.map(seller => getDoc(doc(db, "salesData", seller.uid)));
+        const salesDocs = await Promise.all(salesPromises);
+        currentTeamData = sellers.map((seller, i) => ({
+            ...seller,
+            salesData: salesDocs[i].exists() ? salesDocs[i].data() : { config: {}, sales: [] }
+        }));
+        
+        renderSupervisorDashboard(currentTeamData, storeData);
+    }
+
+    function renderSupervisorDashboard(teamData, storeData){
+        let totalMetaEquipe = 0, totalVendidoEquipe = 0;
+        const salesByDay = {}, today = new Date();
+        const diasNoMes = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        const sellersTableBody = document.getElementById('sellers-table-body');
+        sellersTableBody.innerHTML = '';
+        
+        teamData.forEach(seller => {
+            const metaVendedor = seller.salesData.config?.metaMes || 0;
+            let vendidoMesAtual = 0;
+            (seller.salesData.sales || []).forEach(v => {
+                const vendaDate = new Date(v.date + 'T12:00:00');
+                if (vendaDate.getMonth() === today.getMonth() && vendaDate.getFullYear() === today.getFullYear()) {
+                    vendidoMesAtual += v.amount;
+                    salesByDay[v.date] = (salesByDay[v.date] || 0) + v.amount;
+                }
+            });
+            totalMetaEquipe += metaVendedor;
+            totalVendidoEquipe += vendidoMesAtual;
+            const progresso = metaVendedor > 0 ? (vendidoMesAtual / metaVendedor) * 100 : 0;
+            sellersTableBody.innerHTML += `<tr class="border-b hover:bg-slate-50 cursor-pointer" data-uid="${seller.uid}">
+                <td class="p-3 font-medium">${seller.name}</td>
+                <td class="p-3 text-right">${fmtBRL(metaVendedor)}</td>
+                <td class="p-3 text-right font-semibold">${fmtBRL(vendidoMesAtual)}</td>
+                <td class="p-3"><div class="flex items-center gap-2"><div class="w-full bg-slate-200 h-2.5 rounded-full"><div class="bg-indigo-600 h-2.5 rounded-full" style="width:${Math.min(100,progresso)}%"></div></div><span class="text-xs">${progresso.toFixed(0)}%</span></div></td>
+            </tr>`;
+        });
+        
+        document.getElementById('sup-kpi-meta-equipe').textContent = fmtBRL(totalMetaEquipe);
+        document.getElementById('sup-kpi-vendido-total').textContent = fmtBRL(totalVendidoEquipe);
+        const progressoGeral = totalMetaEquipe > 0 ? (totalVendidoEquipe / totalMetaEquipe) * 100 : 0;
+        document.getElementById('sup-kpi-progresso-total').textContent = `${progressoGeral.toFixed(1)}%`;
+        renderChart('storeChart', salesByDay, totalMetaEquipe, diasNoMes);
+        
+        appLoader.classList.add('hidden');
+        supervisorDashboard.classList.remove('hidden');
+    }
+
+    function setupSupervisorEventListeners(uid, storeId, storeData) {
+        document.getElementById('sup-save-meta-loja').onclick = async () => {
+            const newGoal = Number(document.getElementById('sup-meta-loja-input').value);
+            const feedbackEl = document.getElementById('sup-meta-feedback');
+            if (newGoal >= 0) {
+                await setDoc(doc(db, 'stores', storeId), { storeGoal: newGoal }, { merge: true });
+                feedbackEl.textContent = 'Meta da loja atualizada!';
+                feedbackEl.className = 'text-sm mt-2 text-green-600';
+            } else {
+                feedbackEl.textContent = 'Valor inválido.';
+                feedbackEl.className = 'text-sm mt-2 text-red-600';
+            }
+            setTimeout(() => feedbackEl.textContent = '', 3000);
+        };
+
+        document.getElementById('sellers-table-body').onclick = (e) => {
+            const row = e.target.closest('tr');
+            if (!row) return;
+            const sellerData = currentTeamData.find(s => s.uid === row.dataset.uid);
+            if (sellerData) showChartModal(`Desempenho de ${sellerData.name}`, sellerData);
+        };
+        
+        document.getElementById('sup-close-month-btn').onclick = () => handleCloseMonth(storeId, currentTeamData, storeData);
+        
+        loadAndRenderHistory(storeId);
+    }
+    
+    async function handleCloseMonth(storeId, teamData, storeData) {
+        if (!confirm('Tem certeza que deseja fechar o mês? Esta ação é irreversível e irá zerar as vendas de todos os vendedores.')) return;
+        
+        const today = new Date();
+        const monthId = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        const monthLabel = today.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
+        
+        let totalVendidoEquipe = 0;
+        const salesByDay = {};
+        teamData.forEach(seller => {
+            (seller.salesData.sales || []).forEach(v => {
+                const vendaDate = new Date(v.date + 'T12:00:00');
+                if (vendaDate.getMonth() === today.getMonth() && vendaDate.getFullYear() === today.getFullYear()) {
+                    totalVendidoEquipe += v.amount;
+                    salesByDay[v.date] = (salesByDay[v.date] || 0) + v.amount;
+                }
+            });
+        });
+        
+        const historyData = {
+            monthLabel,
+            storeGoal: storeData.storeGoal,
+            totalSales: totalVendidoEquipe,
+            progress: storeData.storeGoal > 0 ? (totalVendidoEquipe / storeData.storeGoal) * 100 : 0,
+            salesByDay,
+            createdAt: new Date()
+        };
+        
+        try {
+            await setDoc(doc(db, 'stores', storeId, 'history', monthId), historyData);
+            const batch = writeBatch(db);
+            teamData.forEach(seller => {
+                batch.update(doc(db, 'salesData', seller.uid), { sales: [] });
+            });
+            await batch.commit();
+            alert('Mês fechado e arquivado com sucesso!');
+            location.reload(); // Recarrega a página para refletir os dados zerados
+        } catch (error) {
+            console.error("Erro ao fechar o mês: ", error);
+            alert("Ocorreu um erro ao fechar o mês.");
+        }
+    }
+
+    function loadAndRenderHistory(storeId) {
+        const historyRef = collection(db, 'stores', storeId, 'history');
+        unsubscribeHistoryListener = onSnapshot(historyRef, (snapshot) => {
+            const container = document.getElementById('history-table-container');
+            if(snapshot.empty) {
+                container.innerHTML = '<p class="text-sm text-slate-500">Nenhum mês fechado ainda.</p>';
+                return;
+            }
+            let tableHTML = `<table class="min-w-full text-sm text-left">
+                <thead class="bg-slate-100"><tr>
+                    <th class="p-3 font-medium">Mês</th>
+                    <th class="p-3 font-medium text-right">Meta (R$)</th>
+                    <th class="p-3 font-medium text-right">Vendido (R$)</th>
+                    <th class="p-3 font-medium text-right">Progresso</th>
+                    <th class="p-3 font-medium text-center">Ações</th>
+                </tr></thead><tbody>`;
+            
+            const historyDocs = snapshot.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => b.id.localeCompare(a.id));
+
+            historyDocs.forEach(h => {
+                tableHTML += `<tr class="border-b">
+                    <td class="p-3 capitalize">${h.monthLabel}</td>
+                    <td class="p-3 text-right">${fmtBRL(h.storeGoal)}</td>
+                    <td class="p-3 text-right font-semibold">${fmtBRL(h.totalSales)}</td>
+                    <td class="p-3 text-right">${h.progress.toFixed(1)}%</td>
+                    <td class="p-3 text-center space-x-2">
+                        <button class="text-blue-600 hover:underline view-history-btn" data-id="${h.id}">Ver Gráfico</button>
+                        <button class="text-red-600 hover:underline delete-history-btn" data-id="${h.id}">Excluir</button>
+                    </td>
+                </tr>`;
+            });
+            container.innerHTML = tableHTML + '</tbody></table>';
+        });
+        
+        document.getElementById('history-table-container').onclick = async (e) => {
+            const target = e.target;
+            const historyId = target.dataset.id;
+            if(!historyId) return;
+
+            if(target.classList.contains('view-history-btn')){
+                const historyDoc = await getDoc(doc(db, 'stores', storeId, 'history', historyId));
+                if(historyDoc.exists()){
+                    const data = historyDoc.data();
+                    const diasNoMes = new Date(parseInt(historyId.split('-')[0]), parseInt(historyId.split('-')[1]), 0).getDate();
+                    showChartModal(`Desempenho de ${data.monthLabel}`, { salesByDay: data.salesByDay, totalMeta: data.storeGoal, diasNoMes });
+                }
+            }
+            if(target.classList.contains('delete-history-btn')){
+                if(confirm(`Tem certeza que deseja excluir o histórico de ${historyId}?`)){
+                    await deleteDoc(doc(db, 'stores', storeId, 'history', historyId));
+                }
+            }
+        };
+    }
+    
+    let chartInstance;
+    function renderChart(canvasId, salesByDay, totalMeta, diasNoMes, existingChart) {
+        const labels = Array.from({ length: diasNoMes }, (_, i) => i + 1);
+        const dailyTotals = new Array(diasNoMes).fill(0);
+        Object.keys(salesByDay).sort().forEach(date => {
+            const day = parseInt(date.split('-')[2], 10) - 1;
+            if (day >= 0 && day < diasNoMes) dailyTotals[day] = salesByDay[date];
+        });
+        const accumulatedReal = dailyTotals.reduce((acc, val) => [...acc, (acc.length > 0 ? acc[acc.length - 1] : 0) + val], []);
+        const metaDiariaIdeal = (totalMeta || 0) / (diasNoMes || 1);
+        const accumulatedIdeal = labels.map(day => metaDiariaIdeal * day);
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        if (existingChart) existingChart.destroy();
+        return new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Acumulado Real', data: accumulatedReal, borderColor: '#4338ca', fill: true }, { label: 'Acumulado Ideal', data: accumulatedIdeal, borderColor: '#be123c', borderDash: [5, 5] }] }, options: { responsive: true, maintainAspectRatio: false }});
+    }
+
+    let storeChart, modalChart;
+    function showChartModal(title, data) {
+        const modal = document.getElementById('chart-modal');
+        document.getElementById('modal-chart-title').textContent = title;
+        
+        let chartData;
+        if(data.salesData) { // É um vendedor individual do mês atual
+            const { config, sales } = data.salesData;
+            const salesByDay = {};
+            (sales || []).forEach(sale => {
+                salesByDay[sale.date] = (salesByDay[sale.date] || 0) + sale.amount;
+            });
+            chartData = { salesByDay, totalMeta: config?.metaMes, diasNoMes: config?.diasMes };
+        } else { // É um histórico
+            chartData = data;
+        }
+
+        modalChart = renderChart('modalChartCanvas', chartData.salesByDay, chartData.totalMeta, chartData.diasNoMes, modalChart);
+        modal.classList.remove('hidden');
+        document.getElementById('modal-close-btn').onclick = () => modal.classList.add('hidden');
+        modal.onclick = (e) => { if(e.target === modal) modal.classList.add('hidden'); };
+    }
+
+    // --- LÓGICA DO PAINEL DO VENDEDOR ---
+    let sellerChart;
+    function loadSellerDashboard(uid, storeData) {
+        document.getElementById('seller-kpi-meta-loja').textContent = fmtBRL(storeData.storeGoal);
+        const salesDocRef = doc(db, 'salesData', uid);
+        unsubscribeSalesListener = onSnapshot(salesDocRef, (doc) => {
+            const salesData = doc.exists() ? doc.data() : { config: { metaMes: 50000, diasMes: 30, diaAtual: new Date().getDate() }, sales: [] };
+            renderSellerDashboard(salesData);
+        });
+        setupSellerEventListeners(uid);
+        appLoader.classList.add('hidden');
+        sellerDashboard.classList.remove('hidden');
+    }
+
+    function renderSellerDashboard(data) {
+        const { config, sales } = data;
+        const { metaMes, diasMes, diaAtual } = config;
+        document.getElementById('seller-meta-mes').value = metaMes;
+        document.getElementById('seller-dias-mes').value = diasMes;
+        document.getElementById('seller-dia-atual').value = diaAtual;
+
+        const vendidoAteAgora = (sales || []).reduce((sum, sale) => sum + sale.amount, 0);
+        const metaDiaria = metaMes / (diasMes || 1);
+        const ritmoXIdeal = vendidoAteAgora - (metaDiaria * diaAtual);
+        const progresso = metaMes > 0 ? (vendidoAteAgora / metaMes) : 0;
+        document.getElementById('seller-kpi-meta-diaria').textContent = fmtBRL(metaDiaria);
+        document.getElementById('seller-kpi-vendido').textContent = fmtBRL(vendidoAteAgora);
+        const diasRestantes = Math.max(diasMes - diaAtual, 0);
+        document.getElementById('seller-kpi-necessario').textContent = fmtBRL(diasRestantes > 0 ? (Math.max(metaMes - vendidoAteAgora, 0) / diasRestantes) : 0);
+        document.getElementById('seller-kpi-ritmo').textContent = (ritmoXIdeal >= 0 ? '+' : '') + fmtBRL(ritmoXIdeal);
+        document.getElementById('seller-kpi-ritmo').className = 'text-xl font-semibold ' + (ritmoXIdeal >= 0 ? 'text-emerald-600' : 'text-rose-600');
+        document.getElementById('seller-kpi-progresso').textContent = `${(progresso * 100).toFixed(1)}%`;
+        document.getElementById('seller-progress-fill').style.width = Math.min(100, progresso * 100) + '%';
+        
+        const tableBody = document.getElementById('seller-sales-table');
+        tableBody.innerHTML = '';
+        (sales || []).forEach((sale, index) => {
+             tableBody.innerHTML += `<tr class="border-b"><td class="p-2">${sale.date.split('-').reverse().join('/')}</td><td class="p-2 text-right">${fmtBRL(sale.amount)}</td><td class="p-2 text-center"><button data-index="${index}" class="remove-sale-btn text-rose-500 hover:underline text-xs">X</button></td></tr>`;
+        });
+        
+        const salesByDay = {};
+        (sales || []).forEach(s => { salesByDay[s.date] = (salesByDay[s.date] || 0) + s.amount; });
+        sellerChart = renderChart('sellerChart', salesByDay, metaMes, diasMes, sellerChart);
+    }
+
+    function setupSellerEventListeners(uid){
+        const salesDocRef = doc(db, 'salesData', uid);
+        document.getElementById('seller-save-cfg').onclick = async () => {
+            const newConfig = {
+                metaMes: Number(document.getElementById('seller-meta-mes').value) || 0,
+                diasMes: Number(document.getElementById('seller-dias-mes').value) || 30,
+                diaAtual: Number(document.getElementById('seller-dia-atual').value) || new Date().getDate(),
+            };
+            await setDoc(salesDocRef, { config: newConfig }, { merge: true });
+        };
+        document.getElementById('seller-add-sale').onclick = async () => {
+            const date = document.getElementById('seller-sale-date').value;
+            const amount = Number(document.getElementById('seller-sale-amount').value);
+            if (!date || amount <= 0) { alert('Data ou valor inválidos.'); return; }
+            const docSnap = await getDoc(salesDocRef);
+            const currentSales = docSnap.exists() ? (docSnap.data().sales || []) : [];
+            await setDoc(salesDocRef, { sales: [...currentSales, { date, amount }] }, { merge: true });
+            document.getElementById('seller-sale-amount').value = '';
+        };
+        document.getElementById('seller-sales-table').onclick = async (e) => {
+            if (e.target.classList.contains('remove-sale-btn')) {
+                const indexToRemove = parseInt(e.target.dataset.index, 10);
+                const docSnap = await getDoc(salesDocRef);
+                const newSales = docSnap.data().sales.filter((_, i) => i !== indexToRemove);
+                await updateDoc(salesDocRef, { sales: newSales });
+            }
+        };
+        const today = new Date();
+        document.getElementById('seller-sale-date').valueAsDate = today;
+        document.getElementById('seller-dias-mes').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        document.getElementById('seller-dia-atual').value = today.getDate();
+    }
   </script>
 </body>
 </html>
+
