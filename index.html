@@ -4,9 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Portal de Metas</title>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .progress-bar { transition: width 400ms ease; }
@@ -26,7 +24,6 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-  <!-- TELA DE LOGIN -->
   <div id="login-view" class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
     <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-lg">
       <div>
@@ -47,7 +44,6 @@
     </div>
   </div>
 
-  <!-- TELA PRINCIPAL DA APLICAÇÃO -->
   <div id="app-view" class="max-w-7xl mx-auto p-4 sm:p-6 hidden">
     <header class="mb-6 flex flex-wrap justify-between items-center">
       <div>
@@ -57,33 +53,42 @@
       <button id="logout-btn" class="px-4 py-2 mt-2 md:mt-0 rounded-xl bg-rose-600 text-white text-sm hover:bg-rose-700">Sair</button>
     </header>
 
-    <!-- SPINNER DE CARREGAMENTO -->
     <div id="app-loader" class="flex flex-col justify-center items-center py-10 bg-white rounded-2xl shadow">
       <div class="loader"></div>
       <p id="loader-message" class="mt-4 text-slate-600">Verificando credenciais...</p>
     </div>
     
-    <!-- ======================================================= -->
-    <!-- PAINEL ADMINISTRATIVO -->
-    <!-- ======================================================= -->
     <div id="admin-dashboard" class="hidden space-y-6">
+        
+       <section id="admin-store-view-container" class="bg-white rounded-2xl shadow p-5">
+            <h2 class="text-lg font-semibold">Visualizar Desempenho da Loja</h2>
+            <p class="text-sm text-slate-500">Selecione uma loja para ver seus KPIs, gráficos e vendedores (usando o mesmo painel do supervisor).</p>
+            <select id="admin-store-selector" class="mt-3 block w-full max-w-xs pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                <option value="">Selecione uma loja...</option>
+                <option value="24info">24info</option>
+                <option value="MegaMusica">MegaMusica</option>
+                <option value="Data">Data</option>
+                <option value="MegaInfo">MegaInfo</option>
+            </select>
+       </section>
+
        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Coluna de Criação de Usuário -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-2xl shadow p-5 sticky top-6">
-                <h2 class="text-lg font-semibold">Criar Novo Usuário</h2>
+                <h2 id="admin-form-title" class="text-lg font-semibold">Criar Novo Usuário</h2>
                 <form id="create-user-form" class="mt-4 space-y-4">
+                    <input type="hidden" id="admin-edit-uid">
                     <div>
                         <label for="admin-userName" class="block text-sm font-medium text-gray-700">Nome Completo</label>
                         <input type="text" id="admin-userName" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                     </div>
                     <div>
                         <label for="admin-userEmail" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="admin-userEmail" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <input type="email" id="admin-userEmail" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100">
                     </div>
                     <div>
                         <label for="admin-userPassword" class="block text-sm font-medium text-gray-700">Senha Provisória</label>
-                        <input type="password" id="admin-userPassword" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <input type="password" id="admin-userPassword" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100 disabled:placeholder-gray-400" placeholder="Senha de 6+ dígitos">
                     </div>
                     <div>
                         <label for="admin-userRole" class="block text-sm font-medium text-gray-700">Função</label>
@@ -112,11 +117,13 @@
                     <button type="submit" id="admin-create-user-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Criar Conta
                     </button>
+                    <button type="button" id="admin-cancel-edit-btn" class="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hidden">
+                    Cancelar Edição
+                    </button>
                 </form>
                 </div>
             </div>
 
-            <!-- Coluna da Lista de Usuários -->
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-2xl shadow p-5">
                     <h2 class="text-lg font-semibold">Usuários Cadastrados</h2>
@@ -128,10 +135,10 @@
                             <th class="p-3 font-medium">Email</th>
                             <th class="p-3 font-medium">Função</th>
                             <th class="p-3 font-medium">Loja</th>
+                            <th class="p-3 font-medium">Ações</th>
                         </tr>
                         </thead>
                         <tbody id="admin-users-table">
-                        <!-- Linhas preenchidas via JS -->
                         </tbody>
                     </table>
                     </div>
@@ -140,11 +147,7 @@
         </div>
     </div>
 
-    <!-- ======================================================= -->
-    <!-- PAINEL DO SUPERVISOR -->
-    <!-- ======================================================= -->
     <div id="supervisor-dashboard" class="hidden space-y-6">
-        <!-- Definição de Meta da Loja -->
         <section class="bg-white rounded-2xl shadow p-5 grid md:grid-cols-2 gap-6">
             <div>
                 <h2 class="text-lg font-semibold">Gerenciar Meta da Loja</h2>
@@ -164,7 +167,6 @@
              </div>
         </section>
 
-        <!-- KPIs da Loja/Equipe -->
         <section class="grid md:grid-cols-4 gap-6">
             <div class="bg-white rounded-2xl shadow p-5">
                 <p class="text-sm text-slate-500">Meta da Loja</p>
@@ -184,13 +186,11 @@
             </div>
         </section>
 
-        <!-- Gráfico da Loja -->
         <section class="bg-white rounded-2xl shadow p-5">
             <h2 class="text-lg font-semibold">Desempenho de Vendas da Equipe (Mês Atual)</h2>
             <div class="h-96 mt-4"><canvas id="storeChart"></canvas></div>
         </section>
 
-        <!-- Desempenho dos Vendedores -->
         <section class="bg-white rounded-2xl shadow p-5">
             <h2 class="text-lg font-semibold">Desempenho por Vendedor (Mês Atual)</h2>
             <p class="text-xs text-slate-500">Clique em um vendedor para ver seu gráfico individual.</p>
@@ -209,26 +209,19 @@
             </div>
         </section>
 
-        <!-- Histórico de Meses -->
         <section class="bg-white rounded-2xl shadow p-5">
             <h2 class="text-lg font-semibold">Histórico de Meses Fechados</h2>
             <div id="history-table-container" class="overflow-x-auto mt-3">
-                <!-- Tabela de histórico será inserida aqui -->
-            </div>
+                </div>
         </section>
     </div>
 
-    <!-- ======================================================= -->
-    <!-- PAINEL DO VENDEDOR -->
-    <!-- ======================================================= -->
     <div id="seller-dashboard" class="hidden space-y-6">
-      <!-- Meta da Loja (Somente Visualização) -->
       <section class="bg-blue-800 text-white rounded-2xl shadow p-5 text-center">
         <p class="text-sm opacity-80">Meta da Loja</p>
         <p id="seller-kpi-meta-loja" class="text-3xl font-bold tracking-tight">R$ 0,00</p>
       </section>
       
-      <!-- Configurações do Vendedor -->
       <section class="bg-white rounded-2xl shadow p-5 grid md:grid-cols-3 gap-4">
         <div>
           <label class="block text-sm font-medium">Sua meta do mês (R$)</label>
@@ -247,7 +240,6 @@
         </div>
       </section>
 
-      <!-- KPIs do Vendedor -->
       <section class="grid md:grid-cols-4 gap-4">
         <div class="bg-white rounded-2xl shadow p-5"><p class="text-xs text-slate-500">Sua meta diária</p><p id="seller-kpi-meta-diaria" class="text-xl font-semibold">R$ 0,00</p></div>
         <div class="bg-white rounded-2xl shadow p-5"><p class="text-xs text-slate-500">Vendido até agora</p><p id="seller-kpi-vendido" class="text-xl font-semibold">R$ 0,00</p></div>
@@ -255,14 +247,12 @@
         <div class="bg-white rounded-2xl shadow p-5"><p class="text-xs text-slate-500">Seu Ritmo × Ideal</p><p id="seller-kpi-ritmo" class="text-xl font-semibold">R$ 0,00</p></div>
       </section>
 
-      <!-- Progresso do Vendedor -->
       <section class="bg-white rounded-2xl shadow p-5">
         <div class="flex items-center justify-between"><p class="text-sm font-medium">Progresso da sua meta</p><p id="seller-kpi-progresso" class="text-sm font-semibold">0%</p></div>
         <div class="w-full h-3 bg-slate-200 rounded-full mt-2"><div id="seller-progress-fill" class="h-3 bg-indigo-600 rounded-full progress-bar" style="width:0%"></div></div>
       </section>
 
-       <!-- Registro de vendas -->
-      <section class="bg-white rounded-2xl shadow p-5 grid md:grid-cols-3 gap-6">
+       <section class="bg-white rounded-2xl shadow p-5 grid md:grid-cols-3 gap-6">
         <div class="md:col-span-1">
           <h2 class="text-lg font-semibold">Registrar venda</h2>
           <div class="mt-3 space-y-3">
@@ -279,7 +269,6 @@
         </div>
       </section>
       
-      <!-- Gráfico do Vendedor -->
       <section class="bg-white rounded-2xl shadow p-5">
         <h2 class="text-lg font-semibold">Seu Desempenho de Vendas (Acumulado)</h2>
         <div class="h-96 mt-4"><canvas id="sellerChart"></canvas></div>
@@ -287,7 +276,6 @@
     </div>
   </div>
 
-  <!-- Modal para Gráfico -->
   <div id="chart-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
       <div class="bg-white rounded-2xl shadow-xl p-5 w-full max-w-4xl relative">
           <button id="modal-close-btn" class="absolute top-3 right-4 text-3xl font-light text-gray-500 hover:text-gray-800">&times;</button>
@@ -299,10 +287,10 @@
   </div>
 
 
-  <!-- Scripts do Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    // ATUALIZADO: Importar 'sendPasswordResetEmail'
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, onSnapshot, updateDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -404,26 +392,42 @@
     
     // --- LÓGICA DO PAINEL ADMINISTRATIVO ---
     let allSupervisors = [];
+    let allUsers = []; // NOVO: Armazena todos os usuários para edição
+
     function loadAdminDashboard() {
         adminDashboard.classList.remove('hidden');
         appLoader.classList.add('hidden');
         
         const usersRef = collection(db, "users");
+        if(unsubscribeAdminUsersListener) unsubscribeAdminUsersListener();
         unsubscribeAdminUsersListener = onSnapshot(usersRef, (snapshot) => {
-            const users = [];
+            allUsers = []; // Limpa a lista
             allSupervisors = [];
             snapshot.forEach(doc => {
-            const userData = { id: doc.id, ...doc.data() };
-            users.push(userData);
-            if (userData.role === 'supervisor') {
-                allSupervisors.push(userData);
-            }
+              const userData = { id: doc.id, ...doc.data() };
+              allUsers.push(userData); // Adiciona na lista geral
+              if (userData.role === 'supervisor') {
+                  allSupervisors.push(userData);
+              }
             });
-            renderAdminUsersTable(users);
+            renderAdminUsersTable(allUsers); // Renderiza todos os usuários
             updateAdminSupervisorDropdown(); 
         });
 
         setupAdminFormListeners();
+        setupAdminStoreView(); // NOVO: Configura o seletor de lojas
+
+        // NOVO: Listener de eventos na tabela para botões de ação
+        document.getElementById('admin-users-table').addEventListener('click', (e) => {
+            if (e.target.classList.contains('edit-user-btn')) {
+                const uid = e.target.dataset.uid;
+                prepareEditForm(uid);
+            }
+            if (e.target.classList.contains('reset-pass-btn')) {
+                const email = e.target.dataset.email;
+                handlePasswordReset(email);
+            }
+        });
     }
 
     function renderAdminUsersTable(users) {
@@ -437,6 +441,10 @@
                 <td class="p-3">${user.email}</td>
                 <td class="p-3 capitalize">${user.role === 'seller' ? 'Vendedor(a)' : user.role}</td>
                 <td class="p-3">${user.storeId || 'N/A'}</td>
+                <td class="p-3 whitespace-nowrap">
+                    <button class="text-sm text-blue-600 hover:underline edit-user-btn" data-uid="${user.id}">Editar</button>
+                    <button class="text-sm text-red-600 hover:underline ml-2 reset-pass-btn" data-email="${user.email}">Resetar Senha</button>
+                </td>
             `;
             tableBody.appendChild(tr);
         });
@@ -458,10 +466,119 @@
       roleSelect.addEventListener('change', handleRoleOrStoreChange);
       storeSelect.addEventListener('change', handleRoleOrStoreChange);
       
-      document.getElementById('create-user-form').addEventListener('submit', handleCreateUser);
+      // ATUALIZADO: O submit agora chama 'handleSaveUser'
+      document.getElementById('create-user-form').addEventListener('submit', handleSaveUser);
+      // NOVO: Botão de cancelar edição
+      document.getElementById('admin-cancel-edit-btn').addEventListener('click', resetAdminForm);
+      
       handleRoleOrStoreChange();
     }
     
+    // NOVO: Configura o seletor de lojas do Admin
+    function setupAdminStoreView() {
+        document.getElementById('admin-store-selector').addEventListener('change', async (e) => {
+            const storeId = e.target.value;
+            if (storeId) {
+                appLoader.classList.remove('hidden');
+                supervisorDashboard.classList.add('hidden'); // Esconde antes de carregar
+                await loadStoreDataForAdmin(storeId);
+                appLoader.classList.add('hidden');
+                supervisorDashboard.classList.remove('hidden'); // Mostra depois de carregar
+            } else {
+                supervisorDashboard.classList.add('hidden');
+                if(unsubscribeHistoryListener) unsubscribeHistoryListener();
+            }
+        });
+    }
+
+    // NOVO: Carrega os dados da loja para o Admin (similar ao loadSupervisor)
+    async function loadStoreDataForAdmin(storeId) {
+        const storeDoc = await getDoc(doc(db, 'stores', storeId));
+        const storeData = storeDoc.exists() ? storeDoc.data() : { storeGoal: 0 };
+        
+        document.getElementById('sup-kpi-meta-loja').textContent = fmtBRL(storeData.storeGoal);
+        document.getElementById('sup-meta-loja-input').value = storeData.storeGoal || 0;
+        
+        // Query por *LOJA* em vez de supervisor
+        const sellersQuery = query(collection(db, 'users'), where("storeId", "==", storeId), where("role", "==", "seller"));
+        const querySnapshot = await getDocs(sellersQuery);
+        const sellers = querySnapshot.docs.map(d => ({ uid: d.id, ...d.data() }));
+
+        const salesPromises = sellers.map(seller => getDoc(doc(db, "salesData", seller.uid)));
+        const salesDocs = await Promise.all(salesPromises);
+        currentTeamData = sellers.map((seller, i) => ({
+            ...seller,
+            salesData: salesDocs[i].exists() ? salesDocs[i].data() : { config: {}, sales: [] }
+        }));
+        
+        renderSupervisorDashboard(currentTeamData, storeData);
+        // Configura os botões de "Salvar Meta" e "Fechar Mês" para a loja selecionada
+        setupSupervisorEventListeners(null, storeId, storeData); // Passa null para UID
+    }
+    
+    // NOVO: Prepara o formulário para edição
+    function prepareEditForm(uid) {
+        const user = allUsers.find(u => u.id === uid);
+        if (!user) {
+            console.error("Usuário não encontrado para edição");
+            return;
+        }
+
+        document.getElementById('admin-form-title').textContent = 'Editar Usuário';
+        document.getElementById('admin-edit-uid').value = uid;
+        document.getElementById('admin-userName').value = user.name;
+        document.getElementById('admin-userEmail').value = user.email;
+        document.getElementById('admin-userEmail').disabled = true; // Não permite trocar email
+        document.getElementById('admin-userPassword').value = '';
+        document.getElementById('admin-userPassword').disabled = true;
+        document.getElementById('admin-userPassword').required = false;
+        document.getElementById('admin-userPassword').placeholder = 'Use "Resetar Senha" na tabela';
+        document.getElementById('admin-userRole').value = user.role;
+        document.getElementById('admin-userStore').value = user.storeId;
+        
+        // Dispara a lógica de mostrar/esconder o seletor de supervisor
+        document.getElementById('admin-userRole').dispatchEvent(new Event('change'));
+
+        if (user.role === 'seller') {
+            document.getElementById('admin-userSupervisor').value = user.supervisorUid;
+        }
+
+        document.getElementById('admin-create-user-btn').textContent = 'Salvar Alterações';
+        document.getElementById('admin-cancel-edit-btn').classList.remove('hidden');
+        
+        // Rola a tela para o formulário
+        document.getElementById('admin-form-title').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // NOVO: Reseta o formulário para o modo "Criar"
+    function resetAdminForm() {
+        document.getElementById('create-user-form').reset();
+        document.getElementById('admin-form-title').textContent = 'Criar Novo Usuário';
+        document.getElementById('admin-edit-uid').value = '';
+        document.getElementById('admin-userEmail').disabled = false;
+        document.getElementById('admin-userPassword').disabled = false;
+        document.getElementById('admin-userPassword').required = true;
+        document.getElementById('admin-userPassword').placeholder = 'Senha de 6+ dígitos';
+        document.getElementById('admin-create-user-btn').textContent = 'Criar Conta';
+        document.getElementById('admin-cancel-edit-btn').classList.add('hidden');
+        document.getElementById('admin-supervisor-selector-div').classList.add('hidden');
+        document.getElementById('admin-form-feedback').textContent = '';
+    }
+    
+    // NOVO: Função para resetar senha
+    async function handlePasswordReset(email) {
+        if (!confirm(`Um email de redefinição de senha será enviado para ${email}. Deseja continuar?`)) {
+            return;
+        }
+        try {
+            await sendPasswordResetEmail(auth, email);
+            alert('Email de redefinição enviado com sucesso!');
+        } catch (error) {
+            console.error("Erro ao resetar senha:", error);
+            alert('Erro ao enviar email: ' + error.message);
+        }
+    }
+
     function updateAdminSupervisorDropdown() {
         const storeSelect = document.getElementById('admin-userStore');
         const supervisorSelect = document.getElementById('admin-userSupervisor');
@@ -490,18 +607,19 @@
         });
     }
 
-    async function handleCreateUser(e) {
+    // ATUALIZADO: Renomeada de 'handleCreateUser' para 'handleSaveUser'
+    async function handleSaveUser(e) {
       e.preventDefault();
       const form = e.target;
       const feedbackEl = document.getElementById('admin-form-feedback');
       const submitBtn = document.getElementById('admin-create-user-btn');
       
       const name = form['admin-userName'].value;
-      const email = form['admin-userEmail'].value;
-      const password = form['admin-userPassword'].value;
       const role = form['admin-userRole'].value;
       const storeId = form['admin-userStore'].value;
       const supervisorUid = form['admin-userSupervisor'].value;
+      const editUid = form['admin-edit-uid'].value;
+      const isEditMode = !!editUid;
 
       if (role === 'seller' && !supervisorUid) {
         feedbackEl.textContent = 'Por favor, selecione um supervisor para o vendedor.';
@@ -509,32 +627,58 @@
         return;
       }
       
-      feedbackEl.textContent = 'Criando usuário...';
       submitBtn.disabled = true;
 
       try {
-        const tempApp = initializeApp(firebaseConfig, "secondary" + new Date().getTime());
-        const tempAuth = getAuth(tempApp);
-        const userCredential = await createUserWithEmailAndPassword(tempAuth, email, password);
-        const newUser = userCredential.user;
+        if (isEditMode) {
+            // LÓGICA DE EDIÇÃO
+            feedbackEl.textContent = 'Atualizando usuário...';
+            const userData = { name, role, storeId };
+            if (role === 'seller') {
+                userData.supervisorUid = supervisorUid;
+            } else {
+                 userData.supervisorUid = ''; // Remove supervisor se não for vendedor
+            }
+            
+            await updateDoc(doc(db, "users", editUid), userData);
+            
+            feedbackEl.textContent = 'Usuário atualizado com sucesso!';
+            feedbackEl.className = 'text-sm text-green-600';
+            resetAdminForm(); // Reseta o formulário
 
-        const userData = { name, email, role, storeId };
-        if (role === 'seller') {
-            userData.supervisorUid = supervisorUid;
-        }
-
-        await setDoc(doc(db, "users", newUser.uid), userData);
-        form.reset();
-        document.getElementById('admin-supervisor-selector-div').classList.add('hidden');
-        feedbackEl.textContent = 'Usuário criado com sucesso!';
-        feedbackEl.className = 'text-sm text-green-600';
-      } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-            feedbackEl.textContent = 'Erro: Este email já está cadastrado.';
-        } else if (error.code === 'auth/weak-password') {
-            feedbackEl.textContent = 'Erro: A senha precisa ter no mínimo 6 caracteres.';
         } else {
-            feedbackEl.textContent = 'Ocorreu um erro ao criar o usuário.';
+            // LÓGICA DE CRIAÇÃO (existente)
+            feedbackEl.textContent = 'Criando usuário...';
+            const email = form['admin-userEmail'].value;
+            const password = form['admin-userPassword'].value;
+
+            const tempApp = initializeApp(firebaseConfig, "secondary" + new Date().getTime());
+            const tempAuth = getAuth(tempApp);
+            const userCredential = await createUserWithEmailAndPassword(tempAuth, email, password);
+            const newUser = userCredential.user;
+
+            const userData = { name, email, role, storeId };
+            if (role === 'seller') {
+                userData.supervisorUid = supervisorUid;
+            }
+
+            await setDoc(doc(db, "users", newUser.uid), userData);
+            form.reset();
+            document.getElementById('admin-supervisor-selector-div').classList.add('hidden');
+            feedbackEl.textContent = 'Usuário criado com sucesso!';
+            feedbackEl.className = 'text-sm text-green-600';
+        }
+      } catch (error) {
+        if (isEditMode) {
+             feedbackEl.textContent = 'Ocorreu um erro ao atualizar o usuário.';
+        } else {
+            if (error.code === 'auth/email-already-in-use') {
+                feedbackEl.textContent = 'Erro: Este email já está cadastrado.';
+            } else if (error.code === 'auth/weak-password') {
+                feedbackEl.textContent = 'Erro: A senha precisa ter no mínimo 6 caracteres.';
+            } else {
+                feedbackEl.textContent = 'Ocorreu um erro ao criar o usuário.';
+            }
         }
         feedbackEl.className = 'text-sm text-red-600';
       } finally {
@@ -550,6 +694,7 @@
         document.getElementById('sup-meta-loja-input').value = storeData.storeGoal || 0;
         setupSupervisorEventListeners(uid, storeId, storeData);
 
+        // Query por *SUPERVISOR*
         const sellersQuery = query(collection(db, 'users'), where("supervisorUid", "==", uid));
         const querySnapshot = await getDocs(sellersQuery);
         const sellers = querySnapshot.docs.map(d => ({ uid: d.id, ...d.data() }));
@@ -596,14 +741,20 @@
         document.getElementById('sup-kpi-vendido-total').textContent = fmtBRL(totalVendidoEquipe);
         const progressoGeral = totalMetaEquipe > 0 ? (totalVendidoEquipe / totalMetaEquipe) * 100 : 0;
         document.getElementById('sup-kpi-progresso-total').textContent = `${progressoGeral.toFixed(1)}%`;
-        renderChart('storeChart', salesByDay, totalMetaEquipe, diasNoMes);
+        
+        // ATUALIZADO: Chama 'renderChart' e armazena a instância
+        storeChart = renderChart('storeChart', salesByDay, totalMetaEquipe, diasNoMes, storeChart);
         
         appLoader.classList.add('hidden');
-        supervisorDashboard.classList.remove('hidden');
+        supervisorDashboard.classList.remove('hidden'); // Assegura que está visível
     }
 
     function setupSupervisorEventListeners(uid, storeId, storeData) {
-        document.getElementById('sup-save-meta-loja').onclick = async () => {
+        // Remove listeners antigos para evitar duplicação
+        const saveBtn = document.getElementById('sup-save-meta-loja');
+        const newSaveBtn = saveBtn.cloneNode(true);
+        saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+        newSaveBtn.onclick = async () => {
             const newGoal = Number(document.getElementById('sup-meta-loja-input').value);
             const feedbackEl = document.getElementById('sup-meta-feedback');
             if (newGoal >= 0) {
@@ -617,15 +768,26 @@
             setTimeout(() => feedbackEl.textContent = '', 3000);
         };
 
-        document.getElementById('sellers-table-body').onclick = (e) => {
+        const tableBody = document.getElementById('sellers-table-body');
+        const newTableBody = tableBody.cloneNode(false); // Limpa listeners antigos
+        tableBody.parentNode.replaceChild(newTableBody, tableBody);
+        newTableBody.onclick = (e) => {
             const row = e.target.closest('tr');
             if (!row) return;
             const sellerData = currentTeamData.find(s => s.uid === row.dataset.uid);
             if (sellerData) showChartModal(`Desempenho de ${sellerData.name}`, sellerData);
         };
+        // Repopula a tabela (necessário após clonar)
+        newTableBody.innerHTML = document.getElementById('sellers-table-body').innerHTML;
+
+
+        const closeBtn = document.getElementById('sup-close-month-btn');
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+        newCloseBtn.onclick = () => handleCloseMonth(storeId, currentTeamData, storeData);
         
-        document.getElementById('sup-close-month-btn').onclick = () => handleCloseMonth(storeId, currentTeamData, storeData);
-        
+        // Limpa listener de histórico antes de adicionar um novo
+        if(unsubscribeHistoryListener) unsubscribeHistoryListener();
         loadAndRenderHistory(storeId);
     }
     
@@ -665,7 +827,13 @@
             });
             await batch.commit();
             alert('Mês fechado e arquivado com sucesso!');
-            location.reload(); // Recarrega a página para refletir os dados zerados
+            
+            // Recarrega os dados da loja para o admin, se for o admin
+            if(document.getElementById('header-title').textContent === 'Painel Administrativo') {
+                await loadStoreDataForAdmin(storeId);
+            } else {
+                location.reload(); // Recarrega a página para o supervisor
+            }
         } catch (error) {
             console.error("Erro ao fechar o mês: ", error);
             alert("Ocorreu um erro ao fechar o mês.");
@@ -706,7 +874,12 @@
             container.innerHTML = tableHTML + '</tbody></table>';
         });
         
-        document.getElementById('history-table-container').onclick = async (e) => {
+        // Limpa listener antigo
+        const historyContainer = document.getElementById('history-table-container');
+        const newHistoryContainer = historyContainer.cloneNode(true);
+        historyContainer.parentNode.replaceChild(newHistoryContainer, historyContainer);
+        
+        newHistoryContainer.onclick = async (e) => {
             const target = e.target;
             const historyId = target.dataset.id;
             if(!historyId) return;
@@ -727,7 +900,10 @@
         };
     }
     
-    let chartInstance;
+    // ATUALIZADO: A variável 'storeChart' é definida globalmente no escopo do supervisor
+    let storeChart; 
+    let modalChart;
+    
     function renderChart(canvasId, salesByDay, totalMeta, diasNoMes, existingChart) {
         const labels = Array.from({ length: diasNoMes }, (_, i) => i + 1);
         const dailyTotals = new Array(diasNoMes).fill(0);
@@ -738,12 +914,36 @@
         const accumulatedReal = dailyTotals.reduce((acc, val) => [...acc, (acc.length > 0 ? acc[acc.length - 1] : 0) + val], []);
         const metaDiariaIdeal = (totalMeta || 0) / (diasNoMes || 1);
         const accumulatedIdeal = labels.map(day => metaDiariaIdeal * day);
+        
         const ctx = document.getElementById(canvasId).getContext('2d');
-        if (existingChart) existingChart.destroy();
-        return new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Acumulado Real', data: accumulatedReal, borderColor: '#4338ca', fill: true }, { label: 'Acumulado Ideal', data: accumulatedIdeal, borderColor: '#be123c', borderDash: [5, 5] }] }, options: { responsive: true, maintainAspectRatio: false }});
+        if (existingChart) {
+            existingChart.destroy(); // Destrói o gráfico anterior
+        }
+        
+        // Retorna a nova instância do gráfico
+        return new Chart(ctx, { 
+            type: 'line', 
+            data: { 
+                labels, 
+                datasets: [
+                    { label: 'Acumulado Real', data: accumulatedReal, borderColor: '#4338ca', backgroundColor: '#4338ca20', fill: true, tension: 0.1 }, 
+                    { label: 'Acumulado Ideal', data: accumulatedIdeal, borderColor: '#be123c', borderDash: [5, 5], fill: false }
+                ] 
+            }, 
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: {
+                    y: { ticks: { callback: (value) => fmtBRL(value) } },
+                    x: { ticks: { maxTicksLimit: 15 } }
+                },
+                plugins: {
+                    tooltip: { callbacks: { label: (context) => `${context.dataset.label}: ${fmtBRL(context.raw)}` } }
+                }
+            }
+        });
     }
 
-    let storeChart, modalChart;
     function showChartModal(title, data) {
         const modal = document.getElementById('chart-modal');
         document.getElementById('modal-chart-title').textContent = title;
@@ -753,7 +953,12 @@
             const { config, sales } = data.salesData;
             const salesByDay = {};
             (sales || []).forEach(sale => {
-                salesByDay[sale.date] = (salesByDay[sale.date] || 0) + sale.amount;
+                const vendaDate = new Date(sale.date + 'T12:00:00');
+                const today = new Date();
+                // Filtra apenas vendas do mês atual
+                if (vendaDate.getMonth() === today.getMonth() && vendaDate.getFullYear() === today.getFullYear()) {
+                    salesByDay[sale.date] = (salesByDay[sale.date] || 0) + sale.amount;
+                }
             });
             chartData = { salesByDay, totalMeta: config?.metaMes, diasNoMes: config?.diasMes };
         } else { // É um histórico
@@ -771,8 +976,22 @@
     function loadSellerDashboard(uid, storeData) {
         document.getElementById('seller-kpi-meta-loja').textContent = fmtBRL(storeData.storeGoal);
         const salesDocRef = doc(db, 'salesData', uid);
+        
+        if(unsubscribeSalesListener) unsubscribeSalesListener();
         unsubscribeSalesListener = onSnapshot(salesDocRef, (doc) => {
-            const salesData = doc.exists() ? doc.data() : { config: { metaMes: 50000, diasMes: 30, diaAtual: new Date().getDate() }, sales: [] };
+            const today = new Date();
+            const diasNoMes = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+            const diaAtual = today.getDate();
+            
+            const salesData = doc.exists() 
+                ? doc.data() 
+                : { config: { metaMes: 0, diasMes: diasNoMes, diaAtual: diaAtual }, sales: [] };
+            
+            // Garante que a configuração padrão seja usada se não houver config
+            if (!salesData.config) {
+                salesData.config = { metaMes: 0, diasMes: diasNoMes, diaAtual: diaAtual };
+            }
+                
             renderSellerDashboard(salesData);
         });
         setupSellerEventListeners(uid);
@@ -783,18 +1002,33 @@
     function renderSellerDashboard(data) {
         const { config, sales } = data;
         const { metaMes, diasMes, diaAtual } = config;
-        document.getElementById('seller-meta-mes').value = metaMes;
-        document.getElementById('seller-dias-mes').value = diasMes;
-        document.getElementById('seller-dia-atual').value = diaAtual;
+        
+        const today = new Date();
+        const defaultDiasMes = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        const defaultDiaAtual = today.getDate();
 
-        const vendidoAteAgora = (sales || []).reduce((sum, sale) => sum + sale.amount, 0);
-        const metaDiaria = metaMes / (diasMes || 1);
-        const ritmoXIdeal = vendidoAteAgora - (metaDiaria * diaAtual);
-        const progresso = metaMes > 0 ? (vendidoAteAgora / metaMes) : 0;
+        document.getElementById('seller-meta-mes').value = metaMes || 0;
+        document.getElementById('seller-dias-mes').value = diasMes || defaultDiasMes;
+        document.getElementById('seller-dia-atual').value = diaAtual || defaultDiaAtual;
+
+        // Filtra vendas apenas do mês e ano atuais
+        const currentMonthSales = (sales || []).filter(sale => {
+            const saleDate = new Date(sale.date + 'T12:00:00');
+            return saleDate.getMonth() === today.getMonth() && saleDate.getFullYear() === today.getFullYear();
+        });
+
+        const vendidoAteAgora = currentMonthSales.reduce((sum, sale) => sum + sale.amount, 0);
+        const metaDiaria = (metaMes || 0) / (diasMes || 1);
+        const ritmoXIdeal = vendidoAteAgora - (metaDiaria * (diaAtual || defaultDiaAtual));
+        const progresso = (metaMes || 0) > 0 ? (vendidoAteAgora / metaMes) : 0;
+        
         document.getElementById('seller-kpi-meta-diaria').textContent = fmtBRL(metaDiaria);
         document.getElementById('seller-kpi-vendido').textContent = fmtBRL(vendidoAteAgora);
-        const diasRestantes = Math.max(diasMes - diaAtual, 0);
-        document.getElementById('seller-kpi-necessario').textContent = fmtBRL(diasRestantes > 0 ? (Math.max(metaMes - vendidoAteAgora, 0) / diasRestantes) : 0);
+        
+        const diasRestantes = Math.max((diasMes || defaultDiasMes) - (diaAtual || defaultDiaAtual), 0);
+        const necessarioHoje = Math.max(metaMes - vendidoAteAgora, 0);
+        
+        document.getElementById('seller-kpi-necessario').textContent = fmtBRL(diasRestantes > 0 ? (necessarioHoje / diasRestantes) : (necessarioHoje > 0 ? necessarioHoje : 0));
         document.getElementById('seller-kpi-ritmo').textContent = (ritmoXIdeal >= 0 ? '+' : '') + fmtBRL(ritmoXIdeal);
         document.getElementById('seller-kpi-ritmo').className = 'text-xl font-semibold ' + (ritmoXIdeal >= 0 ? 'text-emerald-600' : 'text-rose-600');
         document.getElementById('seller-kpi-progresso').textContent = `${(progresso * 100).toFixed(1)}%`;
@@ -802,12 +1036,19 @@
         
         const tableBody = document.getElementById('seller-sales-table');
         tableBody.innerHTML = '';
-        (sales || []).forEach((sale, index) => {
-             tableBody.innerHTML += `<tr class="border-b"><td class="p-2">${sale.date.split('-').reverse().join('/')}</td><td class="p-2 text-right">${fmtBRL(sale.amount)}</td><td class="p-2 text-center"><button data-index="${index}" class="remove-sale-btn text-rose-500 hover:underline text-xs">X</button></td></tr>`;
+        currentMonthSales.forEach((sale, index) => {
+             // Dando um ID único baseado na posição original do array 'sales'
+             const originalIndex = sales.findIndex(s => s.date === sale.date && s.amount === sale.amount && !s.processed);
+             if (originalIndex > -1) sales[originalIndex].processed = true; // Marca como processado para evitar duplicatas
+             
+             tableBody.innerHTML += `<tr class="border-b"><td class="p-2">${sale.date.split('-').reverse().join('/')}</td><td class="p-2 text-right">${fmtBRL(sale.amount)}</td><td class="p-2 text-center"><button data-index="${originalIndex}" class="remove-sale-btn text-rose-500 hover:underline text-xs">X</button></td></tr>`;
         });
         
+        // Limpa as marcas 'processed'
+        sales.forEach(s => delete s.processed);
+        
         const salesByDay = {};
-        (sales || []).forEach(s => { salesByDay[s.date] = (salesByDay[s.date] || 0) + s.amount; });
+        currentMonthSales.forEach(s => { salesByDay[s.date] = (salesByDay[s.date] || 0) + s.amount; });
         sellerChart = renderChart('sellerChart', salesByDay, metaMes, diasMes, sellerChart);
     }
 
@@ -825,6 +1066,15 @@
             const date = document.getElementById('seller-sale-date').value;
             const amount = Number(document.getElementById('seller-sale-amount').value);
             if (!date || amount <= 0) { alert('Data ou valor inválidos.'); return; }
+            
+            const saleDate = new Date(date + 'T12:00:00');
+            const today = new Date();
+            if(saleDate.getMonth() !== today.getMonth() || saleDate.getFullYear() !== today.getFullYear()) {
+                if(!confirm('A data desta venda não pertence ao mês atual. Deseja registrar mesmo assim?')) {
+                    return;
+                }
+            }
+            
             const docSnap = await getDoc(salesDocRef);
             const currentSales = docSnap.exists() ? (docSnap.data().sales || []) : [];
             await setDoc(salesDocRef, { sales: [...currentSales, { date, amount }] }, { merge: true });
@@ -833,17 +1083,29 @@
         document.getElementById('seller-sales-table').onclick = async (e) => {
             if (e.target.classList.contains('remove-sale-btn')) {
                 const indexToRemove = parseInt(e.target.dataset.index, 10);
+                if(isNaN(indexToRemove)) return;
+                
                 const docSnap = await getDoc(salesDocRef);
-                const newSales = docSnap.data().sales.filter((_, i) => i !== indexToRemove);
+                const currentSales = docSnap.data().sales || [];
+                const newSales = currentSales.filter((_, i) => i !== indexToRemove);
                 await updateDoc(salesDocRef, { sales: newSales });
             }
         };
+        
+        // Define valores padrão ao carregar
         const today = new Date();
         document.getElementById('seller-sale-date').valueAsDate = today;
-        document.getElementById('seller-dias-mes').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-        document.getElementById('seller-dia-atual').value = today.getDate();
+        
+        const configDiasMes = document.getElementById('seller-dias-mes').value;
+        const configDiaAtual = document.getElementById('seller-dia-atual').value;
+        
+        if (!configDiasMes || configDiasMes === "0") {
+             document.getElementById('seller-dias-mes').value = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        }
+        if (!configDiaAtual || configDiaAtual === "0") {
+            document.getElementById('seller-dia-atual').value = today.getDate();
+        }
     }
   </script>
 </body>
 </html>
-
