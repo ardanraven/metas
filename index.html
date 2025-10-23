@@ -71,11 +71,72 @@
                 <option value="MegaInfo">MegaInfo</option>
             </select>
        </section>
+       
+       <section id="vera-control-panel" class="bg-white rounded-2xl shadow p-5 space-y-6">
+            <h2 class="text-lg font-semibold">Controle Diário (VERA)</h2>
+            <p class="text-sm text-slate-500">Este painel registra um valor de venda diário *total* por loja. Estes dados são separados e não afetam os relatórios dos vendedores/supervisores.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-1 space-y-4">
+                    
+                    <div>
+                        <label for="vera-store-selector" class="block text-sm font-medium text-gray-700">Loja</label>
+                        <select id="vera-store-selector" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="">Selecione a loja</option>
+                            <option value="24info">24info</option>
+                            <option value="MegaMusica">MegaMusica</option>
+                            <option value="Data">Data</option>
+                            <option value="MegaInfo">MegaInfo</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <div class="flex-grow">
+                            <label for="vera-meta-input" class="block text-sm font-medium text-gray-700">Meta Mensal (VERA)</label>
+                            <input type="number" id="vera-meta-input" placeholder="Ex: 500000" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                        <button type="button" id="vera-save-meta" class="px-3 py-2 rounded-md bg-emerald-600 text-white text-sm hover:bg-emerald-700">Salvar</button>
+                    </div>
+                     <p id="vera-meta-feedback" class="text-sm"></p>
+
+                    <hr class="border-t border-gray-200" />
+                    
+                    <form id="vera-sale-form" class="space-y-4">
+                        <h3 class="text-md font-semibold">Lançar Venda do Dia</h3>
+                        <div>
+                            <label for="vera-sale-date" class="block text-sm font-medium text-gray-700">Data da Venda</label>
+                            <input type="date" id="vera-sale-date" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="vera-sale-amount" class="block text-sm font-medium text-gray-700">Valor Total Vendido (R$)</label>
+                            <input type="number" id="vera-sale-amount" required placeholder="Ex: 15000" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                        <p id="vera-form-feedback" class="text-sm"></p>
+                        <button type="submit" id="vera-save-sale" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Salvar Venda do Dia
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <h3 id="vera-chart-title" class="text-md font-semibold text-center">Selecione uma loja para ver o gráfico</h3>
+                    <div class="h-80 mt-4">
+                        <canvas id="veraProgressChartCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                 <h3 class="text-md font-semibold">Vendas Lançadas (VERA) - Log Completo</h3>
+                 <div id="vera-sales-table-container" class="max-h-60 overflow-y-auto mt-3">
+                    <p class="text-sm text-slate-500">Selecione uma loja para ver os lançamentos.</p>
+                 </div>
+            </div>
+       </section>
 
        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-2xl shadow p-5 sticky top-6">
-                <h2 id="admin-form-title" class="text-lg font-semibold">Criar Novo Usuário</h2>
+                <h2 id="admin-form-title" class="text-lg font-semibold">Criar/Editar Usuário</h2>
                 <form id="create-user-form" class="mt-4 space-y-4">
                     <input type="hidden" id="admin-edit-uid">
                     <div>
@@ -289,9 +350,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    // ATUALIZADO: Importar 'sendPasswordResetEmail'
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, onSnapshot, updateDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, onSnapshot, updateDoc, deleteDoc, writeBatch, orderBy } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAVEpjwrF4t_Z1MPt5hR1YYuEv2-x7rQqk",
@@ -392,7 +452,7 @@
     
     // --- LÓGICA DO PAINEL ADMINISTRATIVO ---
     let allSupervisors = [];
-    let allUsers = []; // NOVO: Armazena todos os usuários para edição
+    let allUsers = []; 
 
     function loadAdminDashboard() {
         adminDashboard.classList.remove('hidden');
@@ -401,23 +461,23 @@
         const usersRef = collection(db, "users");
         if(unsubscribeAdminUsersListener) unsubscribeAdminUsersListener();
         unsubscribeAdminUsersListener = onSnapshot(usersRef, (snapshot) => {
-            allUsers = []; // Limpa a lista
+            allUsers = []; 
             allSupervisors = [];
             snapshot.forEach(doc => {
               const userData = { id: doc.id, ...doc.data() };
-              allUsers.push(userData); // Adiciona na lista geral
+              allUsers.push(userData); 
               if (userData.role === 'supervisor') {
                   allSupervisors.push(userData);
               }
             });
-            renderAdminUsersTable(allUsers); // Renderiza todos os usuários
+            renderAdminUsersTable(allUsers); 
             updateAdminSupervisorDropdown(); 
         });
 
         setupAdminFormListeners();
-        setupAdminStoreView(); // NOVO: Configura o seletor de lojas
+        setupAdminStoreView(); 
+        setupVeraPanel(); 
 
-        // NOVO: Listener de eventos na tabela para botões de ação
         document.getElementById('admin-users-table').addEventListener('click', (e) => {
             if (e.target.classList.contains('edit-user-btn')) {
                 const uid = e.target.dataset.uid;
@@ -466,24 +526,21 @@
       roleSelect.addEventListener('change', handleRoleOrStoreChange);
       storeSelect.addEventListener('change', handleRoleOrStoreChange);
       
-      // ATUALIZADO: O submit agora chama 'handleSaveUser'
       document.getElementById('create-user-form').addEventListener('submit', handleSaveUser);
-      // NOVO: Botão de cancelar edição
       document.getElementById('admin-cancel-edit-btn').addEventListener('click', resetAdminForm);
       
       handleRoleOrStoreChange();
     }
     
-    // NOVO: Configura o seletor de lojas do Admin
     function setupAdminStoreView() {
         document.getElementById('admin-store-selector').addEventListener('change', async (e) => {
             const storeId = e.target.value;
             if (storeId) {
                 appLoader.classList.remove('hidden');
-                supervisorDashboard.classList.add('hidden'); // Esconde antes de carregar
+                supervisorDashboard.classList.add('hidden'); 
                 await loadStoreDataForAdmin(storeId);
                 appLoader.classList.add('hidden');
-                supervisorDashboard.classList.remove('hidden'); // Mostra depois de carregar
+                supervisorDashboard.classList.remove('hidden'); 
             } else {
                 supervisorDashboard.classList.add('hidden');
                 if(unsubscribeHistoryListener) unsubscribeHistoryListener();
@@ -491,7 +548,6 @@
         });
     }
 
-    // NOVO: Carrega os dados da loja para o Admin (similar ao loadSupervisor)
     async function loadStoreDataForAdmin(storeId) {
         const storeDoc = await getDoc(doc(db, 'stores', storeId));
         const storeData = storeDoc.exists() ? storeDoc.data() : { storeGoal: 0 };
@@ -499,7 +555,6 @@
         document.getElementById('sup-kpi-meta-loja').textContent = fmtBRL(storeData.storeGoal);
         document.getElementById('sup-meta-loja-input').value = storeData.storeGoal || 0;
         
-        // Query por *LOJA* em vez de supervisor
         const sellersQuery = query(collection(db, 'users'), where("storeId", "==", storeId), where("role", "==", "seller"));
         const querySnapshot = await getDocs(sellersQuery);
         const sellers = querySnapshot.docs.map(d => ({ uid: d.id, ...d.data() }));
@@ -512,11 +567,9 @@
         }));
         
         renderSupervisorDashboard(currentTeamData, storeData);
-        // Configura os botões de "Salvar Meta" e "Fechar Mês" para a loja selecionada
-        setupSupervisorEventListeners(null, storeId, storeData); // Passa null para UID
+        setupSupervisorEventListeners(null, storeId, storeData); 
     }
     
-    // NOVO: Prepara o formulário para edição
     function prepareEditForm(uid) {
         const user = allUsers.find(u => u.id === uid);
         if (!user) {
@@ -528,7 +581,7 @@
         document.getElementById('admin-edit-uid').value = uid;
         document.getElementById('admin-userName').value = user.name;
         document.getElementById('admin-userEmail').value = user.email;
-        document.getElementById('admin-userEmail').disabled = true; // Não permite trocar email
+        document.getElementById('admin-userEmail').disabled = true; 
         document.getElementById('admin-userPassword').value = '';
         document.getElementById('admin-userPassword').disabled = true;
         document.getElementById('admin-userPassword').required = false;
@@ -536,7 +589,6 @@
         document.getElementById('admin-userRole').value = user.role;
         document.getElementById('admin-userStore').value = user.storeId;
         
-        // Dispara a lógica de mostrar/esconder o seletor de supervisor
         document.getElementById('admin-userRole').dispatchEvent(new Event('change'));
 
         if (user.role === 'seller') {
@@ -546,11 +598,9 @@
         document.getElementById('admin-create-user-btn').textContent = 'Salvar Alterações';
         document.getElementById('admin-cancel-edit-btn').classList.remove('hidden');
         
-        // Rola a tela para o formulário
         document.getElementById('admin-form-title').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // NOVO: Reseta o formulário para o modo "Criar"
     function resetAdminForm() {
         document.getElementById('create-user-form').reset();
         document.getElementById('admin-form-title').textContent = 'Criar Novo Usuário';
@@ -565,7 +615,6 @@
         document.getElementById('admin-form-feedback').textContent = '';
     }
     
-    // NOVO: Função para resetar senha
     async function handlePasswordReset(email) {
         if (!confirm(`Um email de redefinição de senha será enviado para ${email}. Deseja continuar?`)) {
             return;
@@ -607,7 +656,6 @@
         });
     }
 
-    // ATUALIZADO: Renomeada de 'handleCreateUser' para 'handleSaveUser'
     async function handleSaveUser(e) {
       e.preventDefault();
       const form = e.target;
@@ -631,23 +679,21 @@
 
       try {
         if (isEditMode) {
-            // LÓGICA DE EDIÇÃO
             feedbackEl.textContent = 'Atualizando usuário...';
             const userData = { name, role, storeId };
             if (role === 'seller') {
                 userData.supervisorUid = supervisorUid;
             } else {
-                 userData.supervisorUid = ''; // Remove supervisor se não for vendedor
+                 userData.supervisorUid = ''; 
             }
             
             await updateDoc(doc(db, "users", editUid), userData);
             
             feedbackEl.textContent = 'Usuário atualizado com sucesso!';
             feedbackEl.className = 'text-sm text-green-600';
-            resetAdminForm(); // Reseta o formulário
+            resetAdminForm(); 
 
         } else {
-            // LÓGICA DE CRIAÇÃO (existente)
             feedbackEl.textContent = 'Criando usuário...';
             const email = form['admin-userEmail'].value;
             const password = form['admin-userPassword'].value;
@@ -694,7 +740,6 @@
         document.getElementById('sup-meta-loja-input').value = storeData.storeGoal || 0;
         setupSupervisorEventListeners(uid, storeId, storeData);
 
-        // Query por *SUPERVISOR*
         const sellersQuery = query(collection(db, 'users'), where("supervisorUid", "==", uid));
         const querySnapshot = await getDocs(sellersQuery);
         const sellers = querySnapshot.docs.map(d => ({ uid: d.id, ...d.data() }));
@@ -742,15 +787,13 @@
         const progressoGeral = totalMetaEquipe > 0 ? (totalVendidoEquipe / totalMetaEquipe) * 100 : 0;
         document.getElementById('sup-kpi-progresso-total').textContent = `${progressoGeral.toFixed(1)}%`;
         
-        // ATUALIZADO: Chama 'renderChart' e armazena a instância
         storeChart = renderChart('storeChart', salesByDay, totalMetaEquipe, diasNoMes, storeChart);
         
         appLoader.classList.add('hidden');
-        supervisorDashboard.classList.remove('hidden'); // Assegura que está visível
+        supervisorDashboard.classList.remove('hidden'); 
     }
 
     function setupSupervisorEventListeners(uid, storeId, storeData) {
-        // Remove listeners antigos para evitar duplicação
         const saveBtn = document.getElementById('sup-save-meta-loja');
         const newSaveBtn = saveBtn.cloneNode(true);
         saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
@@ -769,7 +812,7 @@
         };
 
         const tableBody = document.getElementById('sellers-table-body');
-        const newTableBody = tableBody.cloneNode(false); // Limpa listeners antigos
+        const newTableBody = tableBody.cloneNode(false); 
         tableBody.parentNode.replaceChild(newTableBody, tableBody);
         newTableBody.onclick = (e) => {
             const row = e.target.closest('tr');
@@ -777,7 +820,6 @@
             const sellerData = currentTeamData.find(s => s.uid === row.dataset.uid);
             if (sellerData) showChartModal(`Desempenho de ${sellerData.name}`, sellerData);
         };
-        // Repopula a tabela (necessário após clonar)
         newTableBody.innerHTML = document.getElementById('sellers-table-body').innerHTML;
 
 
@@ -786,7 +828,6 @@
         closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
         newCloseBtn.onclick = () => handleCloseMonth(storeId, currentTeamData, storeData);
         
-        // Limpa listener de histórico antes de adicionar um novo
         if(unsubscribeHistoryListener) unsubscribeHistoryListener();
         loadAndRenderHistory(storeId);
     }
@@ -828,11 +869,10 @@
             await batch.commit();
             alert('Mês fechado e arquivado com sucesso!');
             
-            // Recarrega os dados da loja para o admin, se for o admin
             if(document.getElementById('header-title').textContent === 'Painel Administrativo') {
                 await loadStoreDataForAdmin(storeId);
             } else {
-                location.reload(); // Recarrega a página para o supervisor
+                location.reload(); 
             }
         } catch (error) {
             console.error("Erro ao fechar o mês: ", error);
@@ -874,7 +914,6 @@
             container.innerHTML = tableHTML + '</tbody></table>';
         });
         
-        // Limpa listener antigo
         const historyContainer = document.getElementById('history-table-container');
         const newHistoryContainer = historyContainer.cloneNode(true);
         historyContainer.parentNode.replaceChild(newHistoryContainer, historyContainer);
@@ -900,27 +939,30 @@
         };
     }
     
-    // ATUALIZADO: A variável 'storeChart' é definida globalmente no escopo do supervisor
     let storeChart; 
     let modalChart;
     
     function renderChart(canvasId, salesByDay, totalMeta, diasNoMes, existingChart) {
-        const labels = Array.from({ length: diasNoMes }, (_, i) => i + 1);
-        const dailyTotals = new Array(diasNoMes).fill(0);
+        const today = new Date();
+        const validDiasNoMes = diasNoMes > 0 ? diasNoMes : new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        
+        const labels = Array.from({ length: validDiasNoMes }, (_, i) => i + 1);
+        const dailyTotals = new Array(validDiasNoMes).fill(0);
+        
         Object.keys(salesByDay).sort().forEach(date => {
             const day = parseInt(date.split('-')[2], 10) - 1;
-            if (day >= 0 && day < diasNoMes) dailyTotals[day] = salesByDay[date];
+            if (day >= 0 && day < validDiasNoMes) dailyTotals[day] = salesByDay[date];
         });
+        
         const accumulatedReal = dailyTotals.reduce((acc, val) => [...acc, (acc.length > 0 ? acc[acc.length - 1] : 0) + val], []);
-        const metaDiariaIdeal = (totalMeta || 0) / (diasNoMes || 1);
+        const metaDiariaIdeal = (totalMeta || 0) / (validDiasNoMes || 1);
         const accumulatedIdeal = labels.map(day => metaDiariaIdeal * day);
         
         const ctx = document.getElementById(canvasId).getContext('2d');
         if (existingChart) {
-            existingChart.destroy(); // Destrói o gráfico anterior
+            existingChart.destroy(); 
         }
         
-        // Retorna a nova instância do gráfico
         return new Chart(ctx, { 
             type: 'line', 
             data: { 
@@ -949,19 +991,18 @@
         document.getElementById('modal-chart-title').textContent = title;
         
         let chartData;
-        if(data.salesData) { // É um vendedor individual do mês atual
+        if(data.salesData) { 
             const { config, sales } = data.salesData;
             const salesByDay = {};
             (sales || []).forEach(sale => {
                 const vendaDate = new Date(sale.date + 'T12:00:00');
                 const today = new Date();
-                // Filtra apenas vendas do mês atual
                 if (vendaDate.getMonth() === today.getMonth() && vendaDate.getFullYear() === today.getFullYear()) {
                     salesByDay[sale.date] = (salesByDay[sale.date] || 0) + sale.amount;
                 }
             });
             chartData = { salesByDay, totalMeta: config?.metaMes, diasNoMes: config?.diasMes };
-        } else { // É um histórico
+        } else { 
             chartData = data;
         }
 
@@ -987,7 +1028,6 @@
                 ? doc.data() 
                 : { config: { metaMes: 0, diasMes: diasNoMes, diaAtual: diaAtual }, sales: [] };
             
-            // Garante que a configuração padrão seja usada se não houver config
             if (!salesData.config) {
                 salesData.config = { metaMes: 0, diasMes: diasNoMes, diaAtual: diaAtual };
             }
@@ -1011,7 +1051,6 @@
         document.getElementById('seller-dias-mes').value = diasMes || defaultDiasMes;
         document.getElementById('seller-dia-atual').value = diaAtual || defaultDiaAtual;
 
-        // Filtra vendas apenas do mês e ano atuais
         const currentMonthSales = (sales || []).filter(sale => {
             const saleDate = new Date(sale.date + 'T12:00:00');
             return saleDate.getMonth() === today.getMonth() && saleDate.getFullYear() === today.getFullYear();
@@ -1037,14 +1076,12 @@
         const tableBody = document.getElementById('seller-sales-table');
         tableBody.innerHTML = '';
         currentMonthSales.forEach((sale, index) => {
-             // Dando um ID único baseado na posição original do array 'sales'
              const originalIndex = sales.findIndex(s => s.date === sale.date && s.amount === sale.amount && !s.processed);
-             if (originalIndex > -1) sales[originalIndex].processed = true; // Marca como processado para evitar duplicatas
+             if (originalIndex > -1) sales[originalIndex].processed = true; 
              
              tableBody.innerHTML += `<tr class="border-b"><td class="p-2">${sale.date.split('-').reverse().join('/')}</td><td class="p-2 text-right">${fmtBRL(sale.amount)}</td><td class="p-2 text-center"><button data-index="${originalIndex}" class="remove-sale-btn text-rose-500 hover:underline text-xs">X</button></td></tr>`;
         });
         
-        // Limpa as marcas 'processed'
         sales.forEach(s => delete s.processed);
         
         const salesByDay = {};
@@ -1092,7 +1129,6 @@
             }
         };
         
-        // Define valores padrão ao carregar
         const today = new Date();
         document.getElementById('seller-sale-date').valueAsDate = today;
         
@@ -1106,6 +1142,169 @@
             document.getElementById('seller-dia-atual').value = today.getDate();
         }
     }
+    
+    // --- LÓGICA DO PAINEL VERA (CORRIGIDA) ---
+    let veraProgressChart; 
+    
+    function setupVeraPanel() {
+        const form = document.getElementById('vera-sale-form');
+        const selector = document.getElementById('vera-store-selector'); // Pega o seletor principal
+        const metaFeedbackEl = document.getElementById('vera-meta-feedback');
+        const saleFeedbackEl = document.getElementById('vera-form-feedback');
+        const metaInput = document.getElementById('vera-meta-input');
+        const saveMetaBtn = document.getElementById('vera-save-meta');
+        
+        document.getElementById('vera-sale-date').valueAsDate = new Date();
+        
+        selector.addEventListener('change', (e) => {
+            const storeId = e.target.value;
+            if (storeId) {
+                loadAndRenderVeraData(storeId);
+            } else {
+                document.getElementById('vera-chart-title').textContent = 'Selecione uma loja para ver o gráfico';
+                if (veraProgressChart) veraProgressChart.destroy();
+                document.getElementById('vera-sales-table-container').innerHTML = '<p class="text-sm text-slate-500">Selecione uma loja para ver os lançamentos.</p>';
+                metaInput.value = '';
+            }
+        });
+
+        saveMetaBtn.addEventListener('click', async () => {
+            const storeId = selector.value;
+            const newGoal = Number(metaInput.value);
+            
+            if (!storeId) {
+                metaFeedbackEl.textContent = 'Selecione uma loja primeiro.';
+                metaFeedbackEl.className = 'text-sm text-red-600';
+                return;
+            }
+            if (newGoal < 0) {
+                 metaFeedbackEl.textContent = 'Valor da meta inválido.';
+                 metaFeedbackEl.className = 'text-sm text-red-600';
+                 return;
+            }
+
+            const docRef = doc(db, 'veraStoreMeta', storeId);
+            try {
+                await setDoc(docRef, { monthlyGoal: newGoal }, { merge: true });
+                metaFeedbackEl.textContent = 'Meta salva com sucesso!';
+                metaFeedbackEl.className = 'text-sm text-green-600';
+                loadAndRenderVeraData(storeId);
+            } catch (error) {
+                metaFeedbackEl.textContent = 'Erro ao salvar meta.';
+                metaFeedbackEl.className = 'text-sm text-red-600';
+            }
+            setTimeout(() => metaFeedbackEl.textContent = '', 3000);
+        });
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // ==========================================================
+            // AQUI ESTÁ A CORREÇÃO (Linha 1206 do erro original)
+            // Pegamos o 'storeId' do 'selector' (definido no topo da função)
+            const storeId = selector.value; 
+            // ==========================================================
+            
+            const date = form['vera-sale-date'].value;
+            const amount = Number(form['vera-sale-amount'].value);
+            
+            if (!storeId || !date || amount < 0) {
+                 saleFeedbackEl.textContent = 'Por favor, preencha todos os campos.';
+                 saleFeedbackEl.className = 'text-sm text-red-600';
+                 return;
+            }
+            
+            const docId = `${storeId}_${date}`;
+            const docRef = doc(db, 'veraDailySales', docId);
+            
+            try {
+                await setDoc(docRef, { storeId, date, amount });
+                saleFeedbackEl.textContent = 'Venda salva com sucesso!';
+                saleFeedbackEl.className = 'text-sm text-green-600';
+                
+                form['vera-sale-amount'].value = '';
+                
+                loadAndRenderVeraData(storeId);
+                
+            } catch (error) {
+                console.error("Erro ao salvar venda VERA: ", error);
+                saleFeedbackEl.textContent = 'Erro ao salvar a venda.';
+                saleFeedbackEl.className = 'text-sm text-red-600';
+            }
+            
+            setTimeout(() => saleFeedbackEl.textContent = '', 3000);
+        });
+    }
+    
+    async function loadAndRenderVeraData(storeId) {
+        document.getElementById('vera-chart-title').textContent = `Carregando dados para ${storeId}...`;
+        const tableContainer = document.getElementById('vera-sales-table-container');
+        const metaInput = document.getElementById('vera-meta-input');
+
+        // 1. Buscar a Meta VERA
+        let monthlyGoal = 0;
+        try {
+            const metaDoc = await getDoc(doc(db, 'veraStoreMeta', storeId));
+            if (metaDoc.exists()) {
+                monthlyGoal = metaDoc.data().monthlyGoal || 0;
+            }
+            metaInput.value = monthlyGoal;
+        } catch (e) {
+            console.error("Erro ao buscar meta VERA:", e);
+            metaInput.value = 0;
+        }
+
+        // 2. Buscar Vendas VERA (Log completo para a tabela)
+        // Esta query precisa do índice do Firebase
+        const q = query(collection(db, 'veraDailySales'), where('storeId', '==', storeId), orderBy('date', 'desc'));
+        const querySnapshot = await getDocs(q);
+        
+        const allSales = [];
+        querySnapshot.forEach(doc => {
+            allSales.push(doc.data());
+        });
+
+        // 3. Preparar dados para o Gráfico (apenas mês/ano atual)
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+        const diasNoMes = new Date(currentYear, currentMonth + 1, 0).getDate();
+        
+        const salesByDay = {};
+        allSales.forEach(sale => {
+            const saleDate = new Date(sale.date + 'T12:00:00');
+            if (saleDate.getMonth() === currentMonth && saleDate.getFullYear() === currentYear) {
+                salesByDay[sale.date] = (salesByDay[sale.date] || 0) + sale.amount;
+            }
+        });
+        
+        // 4. Renderizar Gráfico de Progresso
+        document.getElementById('vera-chart-title').textContent = `Progresso Acumulado (VERA) - ${storeId}`;
+        veraProgressChart = renderChart('veraProgressChartCanvas', salesByDay, monthlyGoal, diasNoMes, veraProgressChart);
+
+        // 5. Renderizar Tabela (Log Completo)
+        if (allSales.length === 0) {
+            tableContainer.innerHTML = '<p class="text-sm text-slate-500">Nenhum lançamento para esta loja.</p>';
+            if (veraProgressChart) veraProgressChart.destroy(); // Limpa o gráfico se não houver dados
+            return;
+        }
+        
+        let tableHTML = `<table class="min-w-full text-sm text-left">
+            <thead class="bg-slate-100 sticky top-0"><tr>
+                <th class="p-2 font-medium">Data</th>
+                <th class="p-2 font-medium text-right">Valor Total (R$)</th>
+            </tr></thead><tbody>`;
+            
+        allSales.forEach(sale => { // 'allSales' já está 'desc'
+            tableHTML += `<tr class="border-b">
+                <td class="p-2">${sale.date.split('-').reverse().join('/')}</td>
+                <td class="p-2 text-right font-semibold">${fmtBRL(sale.amount)}</td>
+            </tr>`;
+        });
+        
+        tableContainer.innerHTML = tableHTML + '</tbody></table>';
+    }
+    
   </script>
 </body>
 </html>
